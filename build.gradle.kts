@@ -13,6 +13,8 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.squareup:kotlinpoet:1.12.0")
 }
 
 tasks.test {

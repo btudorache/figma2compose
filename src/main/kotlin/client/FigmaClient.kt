@@ -24,6 +24,7 @@ class FigmaClient(
                 .uri(URI.create("${FIGMA_FILES_ENDPOINT}/${figmaFileId}"))
                 .header(FIGMA_TOKEN_HEADER, figmaApiToken)
                 .build()
+
             val response = httpClient.send(request, BodyHandlers.ofString())
             if (response.statusCode() != HttpStatusCode.OK.code) {
                 return Result.failure("Failed to fetch figma data file for $figmaFileId: ${response.body()}")
