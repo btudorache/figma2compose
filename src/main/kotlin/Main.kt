@@ -1,19 +1,31 @@
-import client.FigmaClient
 import converter.Converter
+import client.FigmaFileClient
+import contracts.Result
 
+fun getUsageText(): String = """
+            Invalid arguments. 2 arguments are required.
+            Args: [loadFromAPI | loadFromFS] [APIFileId | filePath]          
+        """.trimIndent()
 fun main(args: Array<String>) {
-    if (args.isEmpty()) {
-        println("Token id expected as first parameter")
+    if (args.size != 2) {
+        println(getUsageText())
         return
     }
 
-    val client = FigmaClient()
-    val figmaFileResult = client.fetchFigmaFile(args[0])
+    val fileClient = FigmaFileClient()
+    val figmaFileResult: Result<String> = when (args[0]) {
+        "loadFromAPI" -> fileClient.loadFromApi(args[1])
+        "loadFromFS" -> fileClient.loadFromFileStorage(args[1])
+        else -> {
+            println(getUsageText())
+            return
+        }
+    }
+
     if (figmaFileResult.hasError) {
-        println("client error: ${figmaFileResult.errorMessage}")
+        println("File client error: ${figmaFileResult.errorMessage}")
         return
     }
 
-    val converter = Converter.createConverter()
-    converter.convert(figmaFileResult.data as String)
+    val converterResult = Converter().convert(figmaFileResult.data as String)
 }

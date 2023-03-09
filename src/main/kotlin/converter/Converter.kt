@@ -1,15 +1,20 @@
 package converter
 
-class Converter {
-    fun convert(figmaInput: String): ConverterResult {
-        println(figmaInput)
-        return ConverterResult(CompletionStatus.SUCCESS)
-    }
+import contracts.Result
+import parser.FigmaGsonParser
+import parser.Parser
 
-    companion object {
-        fun createConverter(): Converter {
-            return Converter()
+class Converter(
+    private val parser: Parser = FigmaGsonParser()
+) {
+    fun convert(figmaInput: String): Result<ConverterResult> {
+        val parserResult = parser.parse(figmaInput)
+        if (parserResult.hasError) {
+            return Result.failure("Parser failed: ${parserResult.errorMessage}")
         }
+
+        println(parserResult.data)
+        return Result.success(ConverterResult(CompletionStatus.SUCCESS))
     }
 }
 
