@@ -1,6 +1,6 @@
 package client
 
-import contracts.Result
+import data.Result
 import java.io.File
 
 class LocalFileSystemClient : FileSystemClient {

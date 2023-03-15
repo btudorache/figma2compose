@@ -1,9 +1,9 @@
-package parser
+package converter.parser
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParseException
-import data.RootDocument
-import contracts.Result
+import data.nodes.root.RootDocument
+import data.Result
 
 class FigmaGsonParser: Parser {
     override fun parse(input: String): Result<RootDocument> {

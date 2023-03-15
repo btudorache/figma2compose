@@ -1,6 +1,6 @@
 package client
 
-import contracts.Result
+import data.Result
 
 interface APIClient {
     fun loadFromApi(fileId: String): Result<String>

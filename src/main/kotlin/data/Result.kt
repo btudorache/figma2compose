@@ -1,4 +1,4 @@
-package contracts
+package data
 
 data class Result<T>(
     val hasError: Boolean,

@@ -1,6 +1,7 @@
 package client
 
-import contracts.Result
+import data.Result
+
 
 interface FileSystemClient {
     fun loadFromFileStorage(path: String): Result<String>

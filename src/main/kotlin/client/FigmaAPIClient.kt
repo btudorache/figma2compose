@@ -1,10 +1,10 @@
 package client
 
+import data.Result
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
-import contracts.Result as Result
 
 private enum class HttpStatusCode(val code: Int) {
     OK(200)
@@ -27,12 +27,12 @@ class FigmaAPIClient(
 
             val response = httpClient.send(request, BodyHandlers.ofString())
             if (response.statusCode() != HttpStatusCode.OK.code) {
-                return Result.failure("Failed to fetch figma data file for $fileId: ${response.body()}")
+                return data.Result.failure("Failed to fetch figma data file for $fileId: ${response.body()}")
             }
 
-            return Result.success(response.body())
+            return data.Result.success(response.body())
         } catch (e: Exception) {
-            return Result.failure("http client send failure: ${e.message}")
+            return data.Result.failure("http client send failure: ${e.message}")
         }
     }
 }
