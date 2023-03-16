@@ -14,11 +14,8 @@ class FigmaComposeConverter(
             return Result.failure("Parser failed: ${parserResult.errorMessage}")
         }
 
-//        println(parserResult.data)
         val componentRoot = parserResult.data as RootDocument
-//        print(componentRoot.componentSets)
-//        print(componentRoot.componentDescriptions)
-        print(componentRoot.document)
+        print(componentRoot.document.pages[0].frames[0])
         return Result.success(ConverterResult(CompletionStatus.SUCCESS))
     }
 }

@@ -1,7 +1,6 @@
 package data.nodes
 
 import com.google.gson.annotations.SerializedName
-import data.nodes.enums.NodeType
 import data.nodes.properties.Color
 import data.nodes.properties.FlowStartingPoint
 import data.nodes.properties.PrototypeDevice

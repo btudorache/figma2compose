@@ -1,7 +1,6 @@
 package data.nodes
 
 import com.google.gson.annotations.SerializedName
-import data.nodes.enums.NodeType
 
 data class Document(
     val id: String,

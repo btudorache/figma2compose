@@ -1,4 +1,6 @@
-package data.nodes.enums
+package data.nodes
+
+import com.google.gson.annotations.SerializedName
 
 enum class NodeType {
     DOCUMENT, CANVAS, FRAME, GROUP, VECTOR, BOOLEAN_OPERATION, STAR, LINE,

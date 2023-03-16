@@ -1,4 +1,4 @@
-package data.nodes.enums
+package data.nodes.properties.enums
 
 enum class BlendMode {
     PASS_THROUGH, NORMAL, DARKEN, MULTIPLY, LINEAR_BURN, COLOR_BURN,

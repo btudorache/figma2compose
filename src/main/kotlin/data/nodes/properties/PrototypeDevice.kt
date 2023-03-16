@@ -1,7 +1,7 @@
 package data.nodes.properties
 
-import data.nodes.enums.PrototypeDeviceType
-import data.nodes.enums.RotationType
+import data.nodes.properties.enums.PrototypeDeviceType
+import data.nodes.properties.enums.RotationType
 
 data class PrototypeDevice(
     val type: PrototypeDeviceType,

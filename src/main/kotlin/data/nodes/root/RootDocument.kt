@@ -1,7 +1,9 @@
 package data.nodes.root
 
 import com.google.gson.annotations.SerializedName
+import converter.Visitor
 import data.nodes.Document
+import data.nodes.Visitable
 
 data class RootDocument(
     val document: Document,
@@ -14,4 +16,8 @@ data class RootDocument(
     val version: String
 
 //    @Transient var additionalField: String
-)
+) : Visitable {
+    override fun <T> accept(visitor: Visitor<T>): T {
+        return visitor.visit(this)
+    }
+}
