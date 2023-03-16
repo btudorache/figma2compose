@@ -1,6 +1,6 @@
 package data.nodes.properties
 
-import data.nodes.properties.enums.ComponentPropertyType
+import data.nodes.enums.ComponentPropertyType
 
 data class ComponentProperty(
     val type: ComponentPropertyType,

@@ -1,8 +1,8 @@
 package data.nodes.properties
 
-import data.nodes.properties.enums.BlendMode
-import data.nodes.properties.enums.PaintType
-import data.nodes.properties.enums.ScaleMode
+import data.nodes.enums.BlendMode
+import data.nodes.enums.PaintType
+import data.nodes.enums.ScaleMode
 
 data class Paint(
     val type: PaintType,

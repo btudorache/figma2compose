@@ -1,4 +1,4 @@
-package converter
+package data
 
 import data.nodes.*
 import data.nodes.root.RootDocument

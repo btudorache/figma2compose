@@ -1,6 +1,6 @@
 package data.nodes.root
 
-import data.nodes.properties.enums.StyleType
+import data.nodes.enums.StyleType
 
 data class RootStyle(
     val key: String,

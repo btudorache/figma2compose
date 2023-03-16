@@ -1,4 +1,4 @@
-package converter.analyser
+package analyser
 
 // TODO: see what the children nodes should return
 data class VisitResult(

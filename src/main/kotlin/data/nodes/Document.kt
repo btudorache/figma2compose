@@ -1,7 +1,7 @@
 package data.nodes
 
 import com.google.gson.annotations.SerializedName
-import converter.Visitor
+import data.Visitor
 import data.Visitable
 
 data class Document(

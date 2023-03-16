@@ -1,7 +1,7 @@
 package data.nodes.properties
 
-import data.nodes.properties.enums.BlendMode
-import data.nodes.properties.enums.EffectType
+import data.nodes.enums.BlendMode
+import data.nodes.enums.EffectType
 
 data class Effect(
     val type: EffectType,

@@ -1,6 +1,6 @@
-package converter.analyser
+package analyser
 
-import converter.Visitor
+import data.Visitor
 import data.nodes.*
 import data.nodes.root.RootDocument
 

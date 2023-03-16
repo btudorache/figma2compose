@@ -1,4 +1,4 @@
-package converter.parser
+package parser
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer

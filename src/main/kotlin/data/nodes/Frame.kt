@@ -1,9 +1,9 @@
 package data.nodes
 
 import com.google.gson.annotations.SerializedName
-import converter.Visitor
-import data.nodes.properties.enums.BlendMode
-import data.nodes.properties.enums.StrokeAlign
+import data.Visitor
+import data.nodes.enums.BlendMode
+import data.nodes.enums.StrokeAlign
 import data.nodes.properties.Effect
 import data.nodes.properties.LayoutConstraint
 import data.nodes.properties.Paint

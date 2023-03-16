@@ -1,10 +1,10 @@
 package converter
 
-import converter.analyser.DummyVisitor
+import analyser.DummyVisitor
 import data.Result
 import data.nodes.root.RootDocument
-import converter.parser.FigmaGsonParser
-import converter.parser.Parser
+import parser.FigmaGsonParser
+import parser.Parser
 
 class FigmaComposeConverter(
     private val parser: Parser = FigmaGsonParser()

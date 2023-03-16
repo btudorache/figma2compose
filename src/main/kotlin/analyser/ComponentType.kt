@@ -1,4 +1,4 @@
-package converter.analyser
+package analyser
 
 enum class ComponentType {
 }

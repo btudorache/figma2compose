@@ -1,6 +1,6 @@
 package data.nodes
 
-import converter.Visitor
+import data.Visitor
 
 data class Text(
     val characters: String,

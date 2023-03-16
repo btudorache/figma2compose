@@ -1,9 +1,9 @@
 package data.nodes
 
 import com.google.gson.annotations.SerializedName
-import converter.Visitor
+import data.Visitor
+import data.nodes.enums.*
 import data.nodes.properties.*
-import data.nodes.properties.enums.*
 
 // TODO: Class shares part of properties with Frame, maybe find a decent way to refactor
 data class Instance(

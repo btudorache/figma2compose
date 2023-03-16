@@ -1,4 +1,4 @@
-package converter.parser
+package parser
 
 import data.Result
 import data.nodes.root.RootDocument
