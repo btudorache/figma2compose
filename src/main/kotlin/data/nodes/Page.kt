@@ -1,6 +1,8 @@
 package data.nodes
 
 import com.google.gson.annotations.SerializedName
+import converter.Visitor
+import data.Visitable
 import data.nodes.properties.Color
 import data.nodes.properties.FlowStartingPoint
 import data.nodes.properties.PrototypeDevice
@@ -13,4 +15,8 @@ data class Page(
     val backgroundColor: Color,
     val flowStartingPoints: Array<FlowStartingPoint>,
     val prototypeDevice: PrototypeDevice
-)
+) : Visitable {
+    override fun <T> accept(visitor: Visitor<T>): T {
+        return visitor.visit(this)
+    }
+}

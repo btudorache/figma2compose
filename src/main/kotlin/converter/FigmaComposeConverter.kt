@@ -1,5 +1,6 @@
 package converter
 
+import converter.analyser.DummyVisitor
 import data.Result
 import data.nodes.root.RootDocument
 import converter.parser.FigmaGsonParser
@@ -15,7 +16,8 @@ class FigmaComposeConverter(
         }
 
         val componentRoot = parserResult.data as RootDocument
-        print(componentRoot.document.pages[0].frames[0])
+//        print(componentRoot.document.pages[0].frames[0])
+        componentRoot.accept(DummyVisitor())
         return Result.success(ConverterResult(CompletionStatus.SUCCESS))
     }
 }

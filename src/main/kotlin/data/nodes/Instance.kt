@@ -30,7 +30,6 @@ data class Instance(
     val paddingBottom: Int,
     val effects: Array<Effect>,
 
-
     // Specific Instance properties
     val componentId: String,
     val isExposedInstance: Boolean,

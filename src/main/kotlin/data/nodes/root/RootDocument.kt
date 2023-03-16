@@ -3,7 +3,7 @@ package data.nodes.root
 import com.google.gson.annotations.SerializedName
 import converter.Visitor
 import data.nodes.Document
-import data.nodes.Visitable
+import data.Visitable
 
 data class RootDocument(
     val document: Document,
