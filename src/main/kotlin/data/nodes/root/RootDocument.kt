@@ -17,7 +17,7 @@ data class RootDocument(
 
 //    @Transient var additionalField: String
 ) : Visitable {
-    override fun <T> accept(visitor: Visitor<T>): T {
-        return visitor.visit(this)
+    override fun <T> accept(visitor: Visitor<T>, additionalData: Any?): T {
+        return visitor.visit(this, additionalData)
     }
 }

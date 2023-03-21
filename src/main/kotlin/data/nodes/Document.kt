@@ -10,7 +10,7 @@ data class Document(
     val type: NodeType,
     @SerializedName("children") val pages: Array<Page>
 ) : Visitable {
-    override fun <T> accept(visitor: Visitor<T>): T {
+    override fun <T> accept(visitor: Visitor<T>, additionalData: Any?): T {
         return visitor.visit(this)
     }
 }

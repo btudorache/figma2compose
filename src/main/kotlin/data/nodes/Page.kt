@@ -16,7 +16,7 @@ data class Page(
     val flowStartingPoints: Array<FlowStartingPoint>,
     val prototypeDevice: PrototypeDevice
 ) : Visitable {
-    override fun <T> accept(visitor: Visitor<T>): T {
+    override fun <T> accept(visitor: Visitor<T>, additionalData: Any?): T {
         return visitor.visit(this)
     }
 }

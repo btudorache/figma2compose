@@ -37,7 +37,7 @@ data class Instance(
     val componentProperties: Map<String, ComponentProperty>,
     val overrides: Array<Overrides>
 ) : Component() {
-    override fun <T> accept(visitor: Visitor<T>): T {
+    override fun <T> accept(visitor: Visitor<T>, additionalData: Any?): T {
         return visitor.visit(this)
     }
 }
