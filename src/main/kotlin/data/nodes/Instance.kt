@@ -1,6 +1,7 @@
 package data.nodes
 
 import com.google.gson.annotations.SerializedName
+import data.AdditionalData
 import data.Visitor
 import data.nodes.enums.*
 import data.nodes.properties.*
@@ -9,7 +10,7 @@ import data.nodes.properties.*
 data class Instance(
     // Shared properties (with Frame)
     val blendMode: BlendMode,
-    @SerializedName("children") val components: Array<Component>,
+    @SerializedName("children") val components: Array<BaseComponent>,
     val absoluteBoundingBox: Rectangle,
     val absoluteRenderBounds: Rectangle,
     val constraints: LayoutConstraint,
@@ -19,7 +20,8 @@ data class Instance(
     val cornerRadius: Int,
     val strokeWeight: Int,
     val strokeAlign: StrokeAlign,
-    val styles: Map<StyleType, String>,
+    // key is of type StyleType
+    val styles: Map<String, String>,
     val layoutMode: LayoutMode,
     val itemSpacing: Int,
     val counterAxisAlignItems: AxisSizingMode,
@@ -36,8 +38,8 @@ data class Instance(
     val exposedInstances: Array<String>,
     val componentProperties: Map<String, ComponentProperty>,
     val overrides: Array<Overrides>
-) : Component() {
-    override fun <T> accept(visitor: Visitor<T>, additionalData: Any?): T {
-        return visitor.visit(this)
+) : BaseComponent() {
+    override fun <T> accept(visitor: Visitor<T>, additionalData: AdditionalData?): T {
+        return visitor.visit(this, additionalData)
     }
 }

@@ -1,4 +1,4 @@
-package data.nodes.root
+package data.nodes.properties.root
 
 import data.nodes.enums.StyleType
 

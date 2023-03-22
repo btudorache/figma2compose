@@ -1,4 +1,4 @@
-package data.nodes.root
+package data.nodes.properties.root
 
 data class RootComponentDescription(
     val key: String,

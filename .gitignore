@@ -31,3 +31,5 @@ local.properties
 
 # Gradle cache
 .gradle
+
+compose_out/

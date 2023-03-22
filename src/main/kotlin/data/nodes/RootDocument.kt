@@ -1,9 +1,11 @@
-package data.nodes.root
+package data.nodes
 
 import com.google.gson.annotations.SerializedName
+import data.AdditionalData
 import data.Visitor
-import data.nodes.Document
-import data.Visitable
+import data.nodes.properties.root.RootComponentDescription
+import data.nodes.properties.root.RootComponentSet
+import data.nodes.properties.root.RootStyle
 
 data class RootDocument(
     val document: Document,
@@ -16,8 +18,8 @@ data class RootDocument(
     val version: String
 
 //    @Transient var additionalField: String
-) : Visitable {
-    override fun <T> accept(visitor: Visitor<T>, additionalData: Any?): T {
+) : TreeNode() {
+    override fun <T> accept(visitor: Visitor<T>, additionalData: AdditionalData?): T {
         return visitor.visit(this, additionalData)
     }
 }

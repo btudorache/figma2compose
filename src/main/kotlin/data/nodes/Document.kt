@@ -1,6 +1,7 @@
 package data.nodes
 
 import com.google.gson.annotations.SerializedName
+import data.AdditionalData
 import data.Visitor
 import data.Visitable
 
@@ -9,8 +10,8 @@ data class Document(
     val name: String,
     val type: NodeType,
     @SerializedName("children") val pages: Array<Page>
-) : Visitable {
-    override fun <T> accept(visitor: Visitor<T>, additionalData: Any?): T {
-        return visitor.visit(this)
+) : TreeNode() {
+    override fun <T> accept(visitor: Visitor<T>, additionalData: AdditionalData?): T {
+        return visitor.visit(this, additionalData)
     }
 }

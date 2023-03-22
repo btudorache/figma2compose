@@ -1,11 +1,12 @@
 package analyser
 
+import data.AdditionalData
 import data.Visitor
 import data.nodes.*
-import data.nodes.root.RootDocument
+import data.nodes.RootDocument
 
 // used for testing/reference
-class DummyVisitor : Visitor<AnalyserResult> {
+class DummyVisitor : Visitor<Unit> {
     var indent = 0
 
     private fun printIndent(str: String?) {
@@ -13,62 +14,67 @@ class DummyVisitor : Visitor<AnalyserResult> {
         println(str)
     }
 
-    override fun visit(rootDocument: RootDocument, additionalData: Any?): AnalyserResult {
+    override fun visit(rootDocument: RootDocument, additionalData: AdditionalData?) {
         printIndent("Root document")
         indent++
-        rootDocument.document.accept(this, additionalData);
+        rootDocument.document.accept(this, null);
         indent--
-
-        return AnalyserResult()
     }
 
-    override fun visit(document: Document, additionalData: Any?): AnalyserResult {
+    override fun visit(document: Document, additionalData: AdditionalData?) {
         printIndent("Document ${document.name}")
         indent++
         document.pages.forEach { page ->
-            page.accept(this, additionalData)
+            page.accept(this, null)
         }
         indent--
-
-        return AnalyserResult()
     }
 
-    override fun visit(page: Page, additionalData: Any?): AnalyserResult {
+    override fun visit(page: Page, additionalData: AdditionalData?) {
         printIndent("Page ${page.name}")
         indent++
         page.frames.forEach { frame ->
-            frame.accept(this, additionalData)
+            frame.accept(this, null)
         }
         indent--
-
-        return AnalyserResult()
     }
 
-    override fun visit(frame: Frame, additionalData: Any?): AnalyserResult {
+    override fun visit(frame: Frame, additionalData: AdditionalData?) {
         printIndent("Frame ${frame.name}")
         indent++
         frame.components.forEach { component ->
-            component.accept(this, additionalData)
+            component.accept(this, null)
         }
         indent--
-
-        return AnalyserResult()
     }
 
-    override fun visit(instance: Instance, additionalData: Any?): AnalyserResult {
+    override fun visit(instance: Instance, additionalData: AdditionalData?) {
         printIndent("Instance ${instance.name}")
         indent++
         instance.components.forEach { component ->
-            component.accept(this, additionalData)
+            component.accept(this, null)
         }
         indent--
-
-        return AnalyserResult()
     }
 
-    override fun visit(text: Text, additionalData: Any?): AnalyserResult {
-        printIndent("Text: ${text.characters}")
+    override fun visit(component: Component, additionalData: AdditionalData?) {
+        printIndent("Component ${component.name}")
+        indent++
+        component.components.forEach { childComponent ->
+            childComponent.accept(this, null)
+        }
+        indent--
+    }
 
-        return AnalyserResult()
+    override fun visit(vector: Vector, additionalData: AdditionalData?) {
+        printIndent("Vector: ${vector.name}")
+    }
+
+    override fun visit(line: Line, additionalData: AdditionalData?) {
+        printIndent("Line: ${line.name}")
+    }
+
+    override fun visit(text: Text, additionalData: AdditionalData?) {
+        printIndent("Text: ${text.characters}")
     }
 }
