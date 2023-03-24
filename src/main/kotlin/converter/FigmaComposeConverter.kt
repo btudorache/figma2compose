@@ -2,7 +2,7 @@ package converter
 
 import analyser.AnalyserResult
 import analyser.AnalyserVisitor
-import analyser.DummyVisitor
+import analyser.PrintVisitor
 import data.Result
 import data.Visitor
 import data.nodes.RootDocument
@@ -23,7 +23,9 @@ class FigmaComposeConverter(
         }
 
         val componentRoot = parserResult.data as RootDocument
-        val dummyResult = componentRoot.accept(DummyVisitor())
+
+        // used for debugging
+        componentRoot.accept(PrintVisitor())
 
         val analyserResult = componentRoot.accept(analyser)
         // TODO do various checks on the analyserResult

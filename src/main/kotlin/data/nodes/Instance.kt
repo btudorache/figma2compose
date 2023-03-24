@@ -7,6 +7,7 @@ import data.nodes.enums.*
 import data.nodes.properties.*
 
 // TODO: Class shares part of properties with Frame, maybe find a decent way to refactor
+// TODO: Find a way to have as little duplication as possible between components in data.nodes
 data class Instance(
     // Shared properties (with Frame)
     val blendMode: BlendMode,
