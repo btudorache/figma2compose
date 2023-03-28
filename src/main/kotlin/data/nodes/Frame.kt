@@ -33,9 +33,6 @@ data class Frame(
     val paddingTop: Int,
     val paddingBottom: Int,
     val effects: Array<Effect>,
-
-    @Expose(serialize = false, deserialize = false)
-    var componentType: ComponentType
 ) : BaseComponent() {
     override fun <T> accept(visitor: Visitor<T>, additionalData: AdditionalData?): T {
         return visitor.visit(this, additionalData)

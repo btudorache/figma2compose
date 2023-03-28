@@ -24,11 +24,11 @@ class FigmaComposeConverter(
 
         val componentRoot = parserResult.data as RootDocument
 
-        // used for debugging
-        componentRoot.accept(PrintVisitor())
-
         val analyserResult = componentRoot.accept(analyser)
         // TODO do various checks on the analyserResult
+
+        // used for debugging
+        componentRoot.accept(PrintVisitor())
 
         val generatorResult = componentRoot.accept(generator)
         // TODO do various checks on the generatorResult

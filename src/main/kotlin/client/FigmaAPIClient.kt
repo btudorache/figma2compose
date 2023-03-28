@@ -27,12 +27,12 @@ class FigmaAPIClient(
 
             val response = httpClient.send(request, BodyHandlers.ofString())
             if (response.statusCode() != HttpStatusCode.OK.code) {
-                return data.Result.failure("Failed to fetch figma data file for $fileId: ${response.body()}")
+                return Result.failure("Failed to fetch figma data file for $fileId: ${response.body()}")
             }
 
-            return data.Result.success(response.body())
+            return Result.success(response.body())
         } catch (e: Exception) {
-            return data.Result.failure("http client send failure: ${e.message}")
+            return Result.failure("http client send failure: ${e.message}")
         }
     }
 }

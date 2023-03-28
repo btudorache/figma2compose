@@ -6,6 +6,18 @@ import data.nodes.*
 import data.nodes.RootDocument
 
 class AnalyserVisitor : Visitor<AnalyserResult> {
+    val errorMessages = arrayOf<String>()
+    val warningsMessages = arrayOf<String>()
+
+    /**
+     * Semantic check between parent type and children types.
+     * Returns False if there are errors
+     */
+    private fun checkSemantics(parentType: ComponentType, childrenTypes: List<ComponentType>): Boolean {
+        // TODO: check semantics for various types and their children
+        return true
+    }
+
     override fun visit(rootDocument: RootDocument, additionalData: AdditionalData?): AnalyserResult {
         rootDocument.document.accept(this, null)
 
@@ -43,6 +55,8 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
     }
 
     override fun visit(instance: Instance, additionalData: AdditionalData?): AnalyserResult {
+        instance.componentType = ComponentType.findTaggedComponentType(instance.name)
+
         instance.components.forEach { component ->
             component.accept(this, null)
         }
@@ -51,11 +65,15 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
     }
 
     override fun visit(component: Component, additionalData: AdditionalData?): AnalyserResult {
-        component.components.forEach { childComponent ->
+        component.componentType = ComponentType.findTaggedComponentType(component.name)
+
+        val childComponentResults = component.components.map { childComponent ->
             childComponent.accept(this, null)
         }
 
-        return AnalyserResult()
+        checkSemantics(component.componentType, childComponentResults.map { result -> result.componentType })
+
+        return AnalyserResult(component.componentType)
     }
 
     override fun visit(vector: Vector, additionalData: AdditionalData?): AnalyserResult {
@@ -67,6 +85,7 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
     }
 
     override fun visit(text: Text, additionalData: AdditionalData?): AnalyserResult {
-        return AnalyserResult(ComponentType.TEXT)
+        text.componentType = ComponentType.TEXT
+        return AnalyserResult(text.componentType)
     }
 }

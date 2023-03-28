@@ -49,7 +49,7 @@ class PrintVisitor : Visitor<Unit> {
     }
 
     override fun visit(instance: Instance, additionalData: AdditionalData?) {
-        printIndent("Instance: ${instance.name}")
+        printIndent("Instance: ${instance.name} with type ${instance.componentType}")
         indent++
         instance.components.forEach { component ->
             component.accept(this, null)
