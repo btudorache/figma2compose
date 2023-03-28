@@ -33,3 +33,4 @@ local.properties
 .gradle
 
 compose_out/
+resources.txt
