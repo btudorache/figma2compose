@@ -1,14 +1,17 @@
 package analyser
 
 // TODO: determine all the available component types
-enum class ComponentType(val isTag: Boolean, val tag: String? = null) {
-    UNKNOWN(false), SCREEN_FRAME(false), COMPONENT_FRAME(false),
-    TEXT(false), UNTAGGED(false),
+// TODO: add is m3 property
+enum class ComponentType(val isTag: Boolean, val isM3Tag: Boolean, val tag: String? = null) {
+    UNKNOWN(false, false), SCREEN_FRAME(false, false), COMPONENT_FRAME(false, false),
+    TEXT(false, false), UNTAGGED(false, false),
 
-    BUTTON(true, "button"), M3_BUTTON(true, "m3:button");
+    BUTTON(true, false, "button"),
+
+    M3_BUTTON(true, true, "m3:button");
 
     companion object {
-        private val taggedComponentTypes = listOf(BUTTON, M3_BUTTON)
+        private val taggedComponentTypes = ComponentType.values().filter { componentType -> componentType.isTag }
         fun findTaggedComponentType(componentName: String): ComponentType {
             val match = Regex("\\[(.*?)]").find(componentName) ?: return UNTAGGED
             val (valueMatched) = match.destructured

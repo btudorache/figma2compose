@@ -13,7 +13,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
     private val OUT_DIRECTORY_PATH = "./compose_out/"
     private lateinit var componentDescriptions: Map<String, RootComponentDescription>
     // TODO: decide if will keep the import
-    private var currentImports = mutableSetOf<String>()
+    private lateinit var currentImports: MutableSet<String>
     override fun visit(rootDocument: RootDocument, additionalData: AdditionalData?): GeneratorResult {
         this.componentDescriptions = rootDocument.componentDescriptions
         rootDocument.document.accept(this, null)
@@ -41,9 +41,9 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
 
     override fun visit(frame: Frame, additionalData: AdditionalData?): GeneratorResult {
         if (frame.componentType == ComponentType.SCREEN_FRAME) {
-            currentImports = mutableSetOf()
+            currentImports = mutableSetOf("androidx.compose.runtime.Composable")
             val frameName = frame.name.split(" ").joinToString("_")
-            // TODO: add filespec builder as instance variable, because you could add more fuctions to the file while traversing the tree
+            // TODO: add filespec builder as instance variable, because you could add more functions to the file while traversing the tree
             val fileBuilder = FileSpec.builder("", frameName)
 
             val frameComposableFunction = FunSpec.builder(frameName)
@@ -77,6 +77,16 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
         if (instance.componentType == ComponentType.BUTTON) {
             currentImports.add("androidx.compose.material.Button")
             codeBlockBuilder.beginControlFlow("Button(onClick = {})")
+        } else if (instance.componentType == ComponentType.M3_BUTTON) {
+            currentImports.add("androidx.compose.material3.Button")
+            // here should check componentDescriptions to see the m3 button type; and other attributes
+            codeBlockBuilder.beginControlFlow("Button(onClick = {})")
+            // you can be sure that the following casts are correct; they would have failed in the analysis layer otherwise
+            val stateLayerFrame = instance.components[0] as Frame
+            val textNode = stateLayerFrame.components[0] as Text
+            codeBlockBuilder.add(buildCodeBlock { addStatement("Text(text = \"${textNode.characters}\")") })
+            codeBlockBuilder.endControlFlow()
+            return GeneratorResult(statement = codeBlockBuilder.build())
         }
 
         instance.components.forEach { component ->

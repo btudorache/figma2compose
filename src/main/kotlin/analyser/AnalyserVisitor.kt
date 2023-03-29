@@ -18,6 +18,11 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
         return true
     }
 
+    private fun checkM3Semantics(parentType: ComponentType): Boolean {
+        // TODO: check semantics for various M3 components
+        return true
+    }
+
     override fun visit(rootDocument: RootDocument, additionalData: AdditionalData?): AnalyserResult {
         rootDocument.document.accept(this, null)
 
@@ -56,6 +61,10 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
 
     override fun visit(instance: Instance, additionalData: AdditionalData?): AnalyserResult {
         instance.componentType = ComponentType.findTaggedComponentType(instance.name)
+        if (instance.componentType.isM3Tag) {
+            checkM3Semantics(instance.componentType)
+            // return here probably
+        }
 
         instance.components.forEach { component ->
             component.accept(this, null)
@@ -66,6 +75,7 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
 
     override fun visit(component: Component, additionalData: AdditionalData?): AnalyserResult {
         component.componentType = ComponentType.findTaggedComponentType(component.name)
+
 
         val childComponentResults = component.components.map { childComponent ->
             childComponent.accept(this, null)
