@@ -51,8 +51,17 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
                 // TODO: specify parameters for column
                 .beginControlFlow("Column()")
 
-            frame.components.forEach { component ->
-                val generatorResult = component.accept(this, null)
+            val sortedGeneratorResults = frame.components
+                .map { component -> component.accept(this, null) }
+                .sortedBy { result ->
+                    if (result.absoluteRenderBounds != null) {
+                        return@sortedBy result.absoluteRenderBounds.y
+                    } else {
+                        return@sortedBy 0.0
+                    }
+                }
+
+            sortedGeneratorResults.forEach { generatorResult ->
                 if (generatorResult.statement != null) {
                     frameComposableFunction.addCode(generatorResult.statement)
                 }
@@ -69,7 +78,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
             }
         }
 
-        return GeneratorResult()
+        return GeneratorResult(absoluteRenderBounds = frame.absoluteRenderBounds)
     }
 
     override fun visit(instance: Instance, additionalData: AdditionalData?): GeneratorResult {
@@ -86,7 +95,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
             val textNode = stateLayerFrame.components[0] as Text
             codeBlockBuilder.add(buildCodeBlock { addStatement("Text(text = \"${textNode.characters}\")") })
             codeBlockBuilder.endControlFlow()
-            return GeneratorResult(statement = codeBlockBuilder.build())
+            return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = instance.absoluteRenderBounds)
         }
 
         instance.components.forEach { component ->
@@ -101,13 +110,13 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
             codeBlockBuilder.endControlFlow()
         }
         val generatorStatement = if (!codeBlockBuilder.isEmpty()) codeBlockBuilder.build() else null
-        return GeneratorResult(statement = generatorStatement)
+        return GeneratorResult(statement = generatorStatement, absoluteRenderBounds = instance.absoluteRenderBounds)
     }
 
     override fun visit(component: Component, additionalData: AdditionalData?): GeneratorResult {
         val codeBlockBuilder = CodeBlock.builder()
         if (component.componentType == ComponentType.BUTTON) {
-            codeBlockBuilder.beginControlFlow("Button()")
+            codeBlockBuilder.beginControlFlow("Button((onClick = {}))")
         }
 
         component.components.forEach { childComponent ->
@@ -122,7 +131,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
             codeBlockBuilder.endControlFlow()
         }
         val generatorStatement = if (!codeBlockBuilder.isEmpty()) codeBlockBuilder.build() else null
-        return GeneratorResult(statement = generatorStatement)
+        return GeneratorResult(statement = generatorStatement, absoluteRenderBounds = component.absoluteRenderBounds)
     }
 
     override fun visit(vector: Vector, additionalData: AdditionalData?): GeneratorResult {
@@ -135,6 +144,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
 
     override fun visit(text: Text, additionalData: AdditionalData?): GeneratorResult {
         currentImports.add("androidx.compose.material.Text")
-        return GeneratorResult(statement = buildCodeBlock {addStatement("Text(text = \"${text.characters}\")")})
+        return GeneratorResult(statement = buildCodeBlock {addStatement("Text(text = \"${text.characters}\")")},
+                               absoluteRenderBounds = text.absoluteRenderBounds)
     }
 }
