@@ -49,7 +49,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
             val frameComposableFunction = FunSpec.builder(frameName)
                 .addAnnotation(Helpers.getComposableAnnotation())
                 // TODO: specify parameters for column
-                .beginControlFlow("Column()")
+                .beginControlFlow("Column(verticalArrangement=Arrangement.SpaceAround,·horizontalAlignment=Alignment.CenterHorizontally)")
 
             val sortedGeneratorResults = frame.components
                 .map { component -> component.accept(this, null) }
@@ -85,15 +85,15 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
         val codeBlockBuilder = CodeBlock.builder()
         if (instance.componentType == ComponentType.BUTTON) {
             currentImports.add("androidx.compose.material.Button")
-            codeBlockBuilder.beginControlFlow("Button(onClick = {})")
+            codeBlockBuilder.beginControlFlow("Button(onClick = {}, ${Helpers.generateButtonModifier(instance.absoluteRenderBounds, instance.fills)})")
         } else if (instance.componentType == ComponentType.M3_BUTTON) {
             currentImports.add("androidx.compose.material3.Button")
             // here should check componentDescriptions to see the m3 button type; and other attributes
-            codeBlockBuilder.beginControlFlow("Button(onClick = {})")
+            codeBlockBuilder.beginControlFlow("Button(onClick = {}, ${Helpers.generateButtonModifier(instance.absoluteRenderBounds, instance.fills)})")
             // you can be sure that the following casts are correct; they would have failed in the analysis layer otherwise
             val stateLayerFrame = instance.components[0] as Frame
             val textNode = stateLayerFrame.components[0] as Text
-            codeBlockBuilder.add(buildCodeBlock { addStatement("Text(text = \"${textNode.characters}\")") })
+            codeBlockBuilder.add(buildCodeBlock { addStatement("Text(text = \"${textNode.characters}\", ${Helpers.generateModifier(textNode)})") })
             codeBlockBuilder.endControlFlow()
             return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = instance.absoluteRenderBounds)
         }
@@ -116,7 +116,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
     override fun visit(component: Component, additionalData: AdditionalData?): GeneratorResult {
         val codeBlockBuilder = CodeBlock.builder()
         if (component.componentType == ComponentType.BUTTON) {
-            codeBlockBuilder.beginControlFlow("Button((onClick = {}))")
+            codeBlockBuilder.beginControlFlow("Button(onClick = {}, ${Helpers.generateButtonModifier(component.absoluteRenderBounds, component.fills)})")
         }
 
         component.components.forEach { childComponent ->
@@ -144,7 +144,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
 
     override fun visit(text: Text, additionalData: AdditionalData?): GeneratorResult {
         currentImports.add("androidx.compose.material.Text")
-        return GeneratorResult(statement = buildCodeBlock {addStatement("Text(text = \"${text.characters}\")")},
+        return GeneratorResult(statement = buildCodeBlock { addStatement("Text(text = \"${text.characters}\", ${Helpers.generateModifier(text)})")},
                                absoluteRenderBounds = text.absoluteRenderBounds)
     }
 }

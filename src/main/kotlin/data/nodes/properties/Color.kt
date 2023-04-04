@@ -1,8 +1,8 @@
 package data.nodes.properties
 
 data class Color(
-    val r: Float,
-    val g: Float,
-    val b: Float,
-    val a: Float
+    val r: Double,
+    val g: Double,
+    val b: Double,
+    val a: Double
 )
