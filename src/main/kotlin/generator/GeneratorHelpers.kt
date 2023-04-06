@@ -10,7 +10,7 @@ import data.nodes.properties.Rectangle
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-class Helpers {
+class GeneratorHelpers {
     companion object {
         fun getComposableAnnotation() = AnnotationSpec.builder(ClassName("", "Composable")).build()
 
@@ -32,14 +32,18 @@ class Helpers {
         }
 
         fun generateButtonModifier(renderBounds: Rectangle, fills: Array<Paint>): String {
+            val generatedModifier = "\nmodifier·=·Modifier.${generateModifierSize(renderBounds)}"
+            if (fills.isEmpty()) {
+                return generatedModifier
+            }
+
             val paint = fills[0]
             val color = paint.color
             val roundedRed = BigDecimal(color.r).setScale(2, RoundingMode.HALF_EVEN)
             val roundedGreen = BigDecimal(color.g).setScale(2, RoundingMode.HALF_EVEN)
             val roundedBlue = BigDecimal(color.b).setScale(2, RoundingMode.HALF_EVEN)
             val roundedAlpha = BigDecimal(color.a).setScale(2, RoundingMode.HALF_EVEN)
-            return "\nmodifier·=·Modifier.${generateModifierSize(renderBounds)}" +
-                    ",\ncolors·=·ButtonDefaults.buttonColors(backgroundColor=Color(red=${roundedRed}f,·green=${roundedGreen}f,·blue=${roundedBlue}f,·alpha=${roundedAlpha}f))"
+            return "${generatedModifier},\ncolors·=·ButtonDefaults.buttonColors(backgroundColor=Color(red=${roundedRed}f,·green=${roundedGreen}f,·blue=${roundedBlue}f,·alpha=${roundedAlpha}f))"
         }
 
         fun generateModifier(text: Text): String {

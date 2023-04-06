@@ -49,7 +49,8 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
         if (additionalData != null && additionalData.parentType == NodeType.CANVAS) {
             frame.componentType = ComponentType.SCREEN_FRAME
         } else {
-            frame.componentType = ComponentType.COMPONENT_FRAME
+            val componentType = ComponentType.findTaggedComponentType(frame.name)
+            frame.componentType = if (componentType == ComponentType.UNTAGGED) ComponentType.COMPONENT_FRAME else componentType
         }
 
         frame.components.forEach { component ->
