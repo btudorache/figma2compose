@@ -53,9 +53,10 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
             frame.componentType = if (componentType == ComponentType.UNTAGGED) ComponentType.COMPONENT_FRAME else componentType
         }
 
-        frame.components.forEach { component ->
+        val childrenAnalyserResults = frame.components.map { component ->
             component.accept(this, null)
         }
+        checkSemantics(frame.componentType, childrenAnalyserResults.map { result -> result.componentType })
 
         return AnalyserResult()
     }
@@ -67,9 +68,10 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
             // return here probably
         }
 
-        instance.components.forEach { component ->
+        val childrenAnalyserResults = instance.components.map { component ->
             component.accept(this, null)
         }
+        checkSemantics(instance.componentType, childrenAnalyserResults.map { result -> result.componentType })
 
         return AnalyserResult()
     }
@@ -81,7 +83,6 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
         val childComponentResults = component.components.map { childComponent ->
             childComponent.accept(this, null)
         }
-
         checkSemantics(component.componentType, childComponentResults.map { result -> result.componentType })
 
         return AnalyserResult(component.componentType)

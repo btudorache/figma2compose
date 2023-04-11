@@ -44,7 +44,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
     override fun visit(frame: Frame, additionalData: AdditionalData?): GeneratorResult {
         if (frame.componentType == ComponentType.SCREEN_FRAME) {
             currentImports = mutableSetOf("androidx.compose.runtime.Composable")
-            val frameName = frame.name.split(" ").joinToString("_")
+            val frameName = frame.name.split("-").joinToString("").split(" ").joinToString("_")
             // TODO: add filespec builder as instance variable, because you could add more functions to the file while traversing the tree
             val fileBuilder = FileSpec.builder("", frameName)
 
@@ -111,6 +111,9 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
         if (instance.componentType == ComponentType.BUTTON) {
             currentImports.add("androidx.compose.material.Button")
             codeBlockBuilder.beginControlFlow("Button(onClick = {}, ${GeneratorHelpers.generateButtonModifier(instance.absoluteRenderBounds, instance.fills)})")
+        } else if (instance.componentType == ComponentType.UNTAGGED) {
+            // TODO: see what needs to be done here
+            codeBlockBuilder.beginControlFlow("Test(${instance.name})")
         }
 
         instance.components.forEach { component ->
@@ -132,6 +135,9 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
         val codeBlockBuilder = CodeBlock.builder()
         if (component.componentType == ComponentType.BUTTON) {
             codeBlockBuilder.beginControlFlow("Button(onClick = {}, ${GeneratorHelpers.generateButtonModifier(component.absoluteRenderBounds, component.fills)})")
+        } else if (component.componentType == ComponentType.UNTAGGED) {
+            // TODO: see what needs to be done here
+            codeBlockBuilder.beginControlFlow("Test(${component.name})")
         }
 
         component.components.forEach { childComponent ->
@@ -141,7 +147,6 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
             }
         }
 
-        // TODO: this condition will be changed probably
         if (!codeBlockBuilder.isEmpty()) {
             codeBlockBuilder.endControlFlow()
         }
