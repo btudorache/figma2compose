@@ -1,9 +1,7 @@
 package analyser
 
-// TODO: determine all the available component types
-// TODO: add is m3 property
 enum class ComponentType(val isTag: Boolean, val isM3Tag: Boolean, val tag: String? = null) {
-    UNKNOWN(false, false), SCREEN_FRAME(false, false), COMPONENT_FRAME(false, false),
+    SCREEN_FRAME(false, false), COMPONENT_FRAME(false, false),
     TEXT(false, false), UNTAGGED(false, false),
 
     BUTTON(true, false, "button"),

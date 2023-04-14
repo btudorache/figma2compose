@@ -7,14 +7,20 @@ import data.Visitor
 import data.nodes.*
 import data.nodes.RootDocument
 import data.nodes.properties.root.RootComponentDescription
+import generator.GeneratorHelpers.Companion.generateButtonModifier
+import generator.GeneratorHelpers.Companion.generateModifier
+import generator.GeneratorHelpers.Companion.getColorModifier
+import generator.GeneratorHelpers.Companion.getModifierType
 import java.io.File
 
 class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
     private val OUT_DIRECTORY_PATH = "./compose_out/"
     private lateinit var componentDescriptions: Map<String, RootComponentDescription>
     private lateinit var currentImports: MutableSet<String>
+    private lateinit var componentMappings: MutableMap<String, String>
 
     // TODO: add file builder for separate m3 components file
+    private lateinit var mainFileBuilder: FileSpec.Builder
 
     override fun visit(rootDocument: RootDocument, additionalData: AdditionalData?): GeneratorResult {
         this.componentDescriptions = rootDocument.componentDescriptions
@@ -44,9 +50,9 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
     override fun visit(frame: Frame, additionalData: AdditionalData?): GeneratorResult {
         if (frame.componentType == ComponentType.SCREEN_FRAME) {
             currentImports = mutableSetOf("androidx.compose.runtime.Composable")
-            val frameName = frame.name.split("-").joinToString("").split(" ").joinToString("_")
-            // TODO: add filespec builder as instance variable, because you could add more functions to the file while traversing the tree
-            val fileBuilder = FileSpec.builder("", frameName)
+            componentMappings = mutableMapOf()
+            val frameName = GeneratorHelpers.generateIdentifier(frame.name)
+            mainFileBuilder = FileSpec.builder("", frameName)
 
             val frameComposableFunction = FunSpec.builder(frameName)
                 .addAnnotation(GeneratorHelpers.getComposableAnnotation())
@@ -70,15 +76,15 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
             }
 
             frameComposableFunction.endControlFlow()
-            fileBuilder.addFunction(frameComposableFunction.build())
+            mainFileBuilder.addFunction(frameComposableFunction.build())
 
-            currentImports.forEach { importString -> fileBuilder.addImport(importString, "") }
-            fileBuilder.build().writeTo(File(OUT_DIRECTORY_PATH))
+            currentImports.forEach { importString -> mainFileBuilder.addImport(importString, "") }
+            mainFileBuilder.build().writeTo(File(OUT_DIRECTORY_PATH))
         } else if (frame.componentType.isTag) {
             val codeBlockBuilder = CodeBlock.builder()
             if (frame.componentType == ComponentType.BUTTON) {
                 currentImports.add("androidx.compose.material.Button")
-                codeBlockBuilder.beginControlFlow("Button(onClick = {}, ${GeneratorHelpers.generateButtonModifier(frame.absoluteRenderBounds, frame.fills)})")
+                codeBlockBuilder.beginControlFlow("Button(onClick = {}, ${generateButtonModifier(frame.absoluteRenderBounds, frame.fills)})")
             }
 
             frame.components.forEach { component ->
@@ -110,10 +116,31 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
         val codeBlockBuilder = CodeBlock.builder()
         if (instance.componentType == ComponentType.BUTTON) {
             currentImports.add("androidx.compose.material.Button")
-            codeBlockBuilder.beginControlFlow("Button(onClick = {}, ${GeneratorHelpers.generateButtonModifier(instance.absoluteRenderBounds, instance.fills)})")
-        } else if (instance.componentType == ComponentType.UNTAGGED) {
-            // TODO: see what needs to be done here
-            codeBlockBuilder.beginControlFlow("Test(${instance.name})")
+            codeBlockBuilder.beginControlFlow("Button(onClick = {}, ${generateButtonModifier(instance.absoluteRenderBounds, instance.fills)})")
+        } else {
+            if (componentMappings.containsKey(instance.componentId)) {
+                val componentFunctionName = componentMappings[instance.componentId]
+                return GeneratorResult(statement = buildCodeBlock { addStatement("${componentFunctionName}(${generateModifier(instance)})") }, absoluteRenderBounds = instance.absoluteRenderBounds)
+            } else {
+                val componentFunctionName = GeneratorHelpers.generateIdentifier(instance.name)
+                val colorString = if (instance.fills.isEmpty()) "" else ".background(${getColorModifier(instance.fills[0])})"
+                val composableFunction = FunSpec.builder(componentFunctionName)
+                        .addAnnotation(GeneratorHelpers.getComposableAnnotation())
+                        .addParameter("modifier", getModifierType())
+                        .beginControlFlow("Column(modifier=modifier${colorString},·verticalArrangement=Arrangement.SpaceAround,·horizontalAlignment=Alignment.CenterHorizontally)")
+
+                instance.components.forEach { component ->
+                    val generatorResult = component.accept(this, null)
+                    if (generatorResult.statement != null) {
+                        composableFunction.addStatement(generatorResult.statement.toString())
+                    }
+                }
+
+                composableFunction.endControlFlow()
+                mainFileBuilder.addFunction(composableFunction.build())
+                componentMappings[instance.componentId] = componentFunctionName
+                return GeneratorResult(statement = buildCodeBlock { addStatement("${componentFunctionName}(${generateModifier(instance)})") }, absoluteRenderBounds = instance.absoluteRenderBounds)
+            }
         }
 
         instance.components.forEach { component ->
@@ -134,10 +161,31 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
     override fun visit(component: Component, additionalData: AdditionalData?): GeneratorResult {
         val codeBlockBuilder = CodeBlock.builder()
         if (component.componentType == ComponentType.BUTTON) {
-            codeBlockBuilder.beginControlFlow("Button(onClick = {}, ${GeneratorHelpers.generateButtonModifier(component.absoluteRenderBounds, component.fills)})")
-        } else if (component.componentType == ComponentType.UNTAGGED) {
-            // TODO: see what needs to be done here
-            codeBlockBuilder.beginControlFlow("Test(${component.name})")
+            codeBlockBuilder.beginControlFlow("Button(onClick = {}, ${generateButtonModifier(component.absoluteRenderBounds, component.fills)})")
+        } else {
+            if (componentMappings.containsKey(component.id)) {
+                val componentFunctionName = componentMappings[component.id]
+                return GeneratorResult(statement = buildCodeBlock { addStatement("${componentFunctionName}(${generateModifier(component)})") }, absoluteRenderBounds = component.absoluteRenderBounds)
+            } else {
+                val componentFunctionName = GeneratorHelpers.generateIdentifier(component.name)
+                val colorString = if (component.fills.isEmpty()) "" else ".background(${getColorModifier(component.fills[0])})"
+                val composableFunction = FunSpec.builder(componentFunctionName)
+                    .addAnnotation(GeneratorHelpers.getComposableAnnotation())
+                    .addParameter("modifier", getModifierType())
+                    .beginControlFlow("Column(modifier=modifier${colorString},·verticalArrangement=Arrangement.SpaceAround,·horizontalAlignment=Alignment.CenterHorizontally)")
+
+                component.components.forEach { componentChild ->
+                    val generatorResult = componentChild.accept(this, null)
+                    if (generatorResult.statement != null) {
+                        composableFunction.addStatement(generatorResult.statement.toString())
+                    }
+                }
+
+                composableFunction.endControlFlow()
+                mainFileBuilder.addFunction(composableFunction.build())
+                componentMappings[component.id] = componentFunctionName
+                return GeneratorResult(statement = buildCodeBlock { addStatement("${componentFunctionName}(${generateModifier(component)})") }, absoluteRenderBounds = component.absoluteRenderBounds)
+            }
         }
 
         component.components.forEach { childComponent ->
@@ -165,7 +213,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
 
     override fun visit(text: Text, additionalData: AdditionalData?): GeneratorResult {
         currentImports.add("androidx.compose.material.Text")
-        return GeneratorResult(statement = buildCodeBlock { addStatement("Text(text = \"${text.characters}\", ${GeneratorHelpers.generateModifier(text)})")},
+        return GeneratorResult(statement = buildCodeBlock { addStatement("Text(${generateModifier(text)})")},
                                absoluteRenderBounds = text.absoluteRenderBounds)
     }
 }

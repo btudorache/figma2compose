@@ -46,7 +46,7 @@ class M3GeneratorHelpers {
             // you can be sure that the following casts are correct; they would have failed in the analysis layer otherwise
             val stateLayerFrame = instance.components[0] as Frame
             val textNode = stateLayerFrame.components.last() as Text
-            codeBlockBuilder.add(buildCodeBlock { addStatement("Text(text = \"${textNode.characters}\", ${GeneratorHelpers.generateModifier(textNode)})") })
+            codeBlockBuilder.add(buildCodeBlock { addStatement("Text(${GeneratorHelpers.generateModifier(textNode)})") })
             codeBlockBuilder.endControlFlow()
             return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = instance.absoluteRenderBounds)
         }

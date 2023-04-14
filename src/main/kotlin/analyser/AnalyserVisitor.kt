@@ -9,6 +9,10 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
     val errorMessages = arrayOf<String>()
     val warningsMessages = arrayOf<String>()
 
+    private fun sanitizeString(str: String): String {
+        return str.replace("/", "")
+    }
+
     /**
      * Semantic check between parent type and children types.
      * Returns False if there are errors
@@ -63,6 +67,7 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
 
     override fun visit(instance: Instance, additionalData: AdditionalData?): AnalyserResult {
         instance.componentType = ComponentType.findTaggedComponentType(instance.name)
+        instance.name = sanitizeString(instance.name)
         if (instance.componentType.isM3Tag) {
             checkM3Semantics(instance.componentType)
             // return here probably
