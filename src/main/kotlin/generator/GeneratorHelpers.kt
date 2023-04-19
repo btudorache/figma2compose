@@ -29,15 +29,11 @@ class GeneratorHelpers {
             return name.split("-").joinToString("").split(" ").joinToString("_")
         }
         fun generateModifier(instance: Instance): String {
-            val colorString = ""
-//            val colorString = if (instance.fills.isEmpty()) "" else ",·color=${getColorModifier(instance.fills[0])}"
-            return "modifier·=·Modifier.${generateModifierSize(instance.absoluteRenderBounds)}${colorString}"
+            return "modifier·=·Modifier.${generateModifierSize(instance.absoluteRenderBounds)}"
         }
 
         fun generateModifier(component: Component): String {
-            val colorString = ""
-//            val colorString = if (component.fills.isEmpty()) "" else ",·color=${getColorModifier(component.fills[0])}"
-            return "modifier·=·Modifier.${generateModifierSize(component.absoluteRenderBounds)}${colorString}"
+            return "modifier·=·Modifier.${generateModifierSize(component.absoluteRenderBounds)}"
         }
 
         private fun generateModifierSize(renderBounds: Rectangle): String {
@@ -57,8 +53,8 @@ class GeneratorHelpers {
         }
 
         fun generateModifier(text: Text): String {
-            return "text = \"${text.characters}\",·modifier·=·Modifier.${generateModifierSize(text.absoluteRenderBounds)}" +
-                    ",\nfontSize·=·${text.style.fontSize}.sp,·color·=·${getColorModifier(text.fills[0])}"
+            return "text·=·\"${text.characters}\",·modifier·=·Modifier.${generateModifierSize(text.absoluteRenderBounds)}" +
+                    ",\nfontSize·=·${text.style.fontSize - 2}.sp,·color·=·${getColorModifier(text.fills[0])}"
         }
     }
 }

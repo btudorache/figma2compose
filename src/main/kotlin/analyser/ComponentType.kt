@@ -4,7 +4,7 @@ enum class ComponentType(val isTag: Boolean, val isM3Tag: Boolean, val tag: Stri
     SCREEN_FRAME(false, false), COMPONENT_FRAME(false, false),
     TEXT(false, false), UNTAGGED(false, false),
 
-    BUTTON(true, false, "button"),
+    BUTTON(true, false, "button"), TEXT_FIELD(true, false, "text-field"),
 
     M3_BUTTON(true, true, "m3:button");
 
