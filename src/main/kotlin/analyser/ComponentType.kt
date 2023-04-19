@@ -2,7 +2,7 @@ package analyser
 
 enum class ComponentType(val isTag: Boolean, val isM3Tag: Boolean, val tag: String? = null) {
     SCREEN_FRAME(false, false), COMPONENT_FRAME(false, false),
-    TEXT(false, false), UNTAGGED(false, false),
+    TEXT(false, false), UNTAGGED(false, false), UNKNOWN(false, false),
 
     BUTTON(true, false, "button"), TEXT_FIELD(true, false, "text-field"),
 
@@ -14,7 +14,7 @@ enum class ComponentType(val isTag: Boolean, val isM3Tag: Boolean, val tag: Stri
             val match = Regex("\\[(.*?)]").find(componentName) ?: return UNTAGGED
             val (valueMatched) = match.destructured
 
-            return taggedComponentTypes.find { componentType -> componentType.tag == valueMatched } ?: return UNTAGGED
+            return taggedComponentTypes.find { componentType -> componentType.tag == valueMatched } ?: return UNKNOWN
         }
     }
 }

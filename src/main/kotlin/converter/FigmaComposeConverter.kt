@@ -26,6 +26,9 @@ class FigmaComposeConverter(
 
         val analyserResult = componentRoot.accept(analyser)
         // TODO do various checks on the analyserResult
+        if (!analyserResult.errorMessages.isNullOrEmpty()) {
+            return Result.failure("Failed to analyse input: ${analyserResult.errorMessages}")
+        }
 
         // used for debugging
         componentRoot.accept(PrintVisitor())

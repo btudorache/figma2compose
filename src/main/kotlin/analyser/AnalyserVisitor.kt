@@ -6,8 +6,8 @@ import data.nodes.*
 import data.nodes.RootDocument
 
 class AnalyserVisitor : Visitor<AnalyserResult> {
-    val errorMessages = arrayOf<String>()
-    val warningsMessages = arrayOf<String>()
+    val errorMessages = mutableListOf<String>()
+    val warningsMessages = mutableListOf<String>()
 
     private fun sanitizeString(str: String): String {
         return str.replace("/", "")
@@ -27,10 +27,20 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
         return true
     }
 
+    private fun tagIsUnknown(type: ComponentType, componentName: String): Boolean {
+        if (type == ComponentType.UNKNOWN) {
+            val errorString = "Component ${componentName} has invalid tag"
+            errorMessages.add(errorString)
+            return true
+        }
+
+        return false
+    }
+
     override fun visit(rootDocument: RootDocument, additionalData: AdditionalData?): AnalyserResult {
         rootDocument.document.accept(this, null)
 
-        return AnalyserResult()
+        return AnalyserResult(errorMessages = errorMessages, warningsMessages = warningsMessages)
     }
 
     override fun visit(document: Document, additionalData: AdditionalData?): AnalyserResult {
@@ -54,6 +64,10 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
             frame.componentType = ComponentType.SCREEN_FRAME
         } else {
             val componentType = ComponentType.findTaggedComponentType(frame.name)
+            if (tagIsUnknown(componentType, frame.name)) {
+                return AnalyserResult(ComponentType.UNKNOWN)
+            }
+
             frame.componentType = if (componentType == ComponentType.UNTAGGED) ComponentType.COMPONENT_FRAME else componentType
         }
 
@@ -66,7 +80,12 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
     }
 
     override fun visit(instance: Instance, additionalData: AdditionalData?): AnalyserResult {
-        instance.componentType = ComponentType.findTaggedComponentType(instance.name)
+        val componentType = ComponentType.findTaggedComponentType(instance.name)
+        if (tagIsUnknown(componentType, instance.name)) {
+            return AnalyserResult(ComponentType.UNKNOWN)
+        }
+
+        instance.componentType = componentType
         instance.name = sanitizeString(instance.name)
         if (instance.componentType.isM3Tag) {
             checkM3Semantics(instance.componentType)
@@ -82,7 +101,12 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
     }
 
     override fun visit(component: Component, additionalData: AdditionalData?): AnalyserResult {
-        component.componentType = ComponentType.findTaggedComponentType(component.name)
+        val componentType = ComponentType.findTaggedComponentType(component.name)
+        if (tagIsUnknown(componentType, component.name)) {
+            return AnalyserResult(ComponentType.UNKNOWN)
+        }
+
+        component.componentType = componentType
 
 
         val childComponentResults = component.components.map { childComponent ->
