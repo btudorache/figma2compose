@@ -7,6 +7,8 @@ import data.nodes.Frame
 import data.nodes.Instance
 import data.nodes.Text
 import data.nodes.properties.root.RootComponentDescription
+import generator.M3Types.ButtonType
+import generator.M3Types.TextFieldType
 
 class M3GeneratorHelpers {
     companion object {
@@ -40,9 +42,10 @@ class M3GeneratorHelpers {
             } else {
                 currentImports.add("androidx.compose.material3.Button")
             }
+            currentImports.add("androidx.compose.material3.Text")
 
             val codeBlockBuilder = CodeBlock.builder()
-            codeBlockBuilder.beginControlFlow("${buttonType}(onClick = {}, ${GeneratorHelpers.generateButtonModifier(instance.absoluteRenderBounds, instance.fills)})")
+            codeBlockBuilder.beginControlFlow("${buttonType}(onClick = {}, ${GeneratorHelpers.generateButtonModifier(instance.absoluteRenderBounds, instance.fills, true)})")
             // you can be sure that the following casts are correct; they would have failed in the analysis layer otherwise
             val stateLayerFrame = instance.components[0] as Frame
             val textNode = stateLayerFrame.components.last() as Text
@@ -51,11 +54,41 @@ class M3GeneratorHelpers {
             return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = instance.absoluteRenderBounds)
         }
 
+        private fun generateM3TextField(instance: Instance, currentImports: MutableSet<String>, componentDescription: RootComponentDescription?): GeneratorResult {
+            var textFieldType = "TextField"
+            if (componentDescription != null) {
+                val textFieldConfiguration = componentDescription.name.split(", ")[0].split("=")[1]
+                textFieldType = when (textFieldConfiguration) {
+                    TextFieldType.FILLED.type -> {
+                        currentImports.add("androidx.compose.material3.TextField")
+                        "TextField"
+                    }
+                    TextFieldType.OUTLINED.type -> {
+                        currentImports.add("androidx.compose.material3.OutlinedTextField")
+                        "OutlinedTextField"
+                    }
+                    else -> {
+                        currentImports.add("androidx.compose.material3.Button")
+                        "TextField"
+                    }
+                }
+            } else {
+                currentImports.add("androidx.compose.material3.Button")
+            }
+            currentImports.add("androidx.compose.material3.Text")
+
+            val codeBlockBuilder = CodeBlock.builder().addStatement("${textFieldType}(value = \"\", onValueChange = {}, label = { Text(\"Label\") }, ${GeneratorHelpers.generateModifier(instance)})")
+            return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = instance.absoluteRenderBounds)
+        }
+
         fun generateM3Component(instance: Instance, componentDescriptions: Map<String, RootComponentDescription>, currentImports: MutableSet<String>): GeneratorResult {
             val componentDescription = componentDescriptions.getValue(instance.componentId)
             return when (instance.componentType) {
                 ComponentType.M3_BUTTON -> {
                     generateM3Button(instance, currentImports, componentDescription)
+                }
+                ComponentType.M3_TEXT_FIELD -> {
+                    generateM3TextField(instance, currentImports, componentDescription)
                 }
                 else -> {
                     GeneratorResult()

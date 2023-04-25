@@ -43,13 +43,14 @@ class GeneratorHelpers {
             return "size(width=${roundedWidth}.dp,·height=${roundedHeight}.dp)"
         }
 
-        fun generateButtonModifier(renderBounds: Rectangle, fills: Array<Paint>): String {
+        fun generateButtonModifier(renderBounds: Rectangle, fills: Array<Paint>, isM3Button: Boolean = false): String {
+            val buttonColorsPropertyText = if (isM3Button) "containerColor" else "backgroundColor"
             val generatedModifier = "\nmodifier·=·Modifier.${generateModifierSize(renderBounds)}"
             if (fills.isEmpty()) {
                 return generatedModifier
             }
 
-            return "${generatedModifier},\ncolors·=·ButtonDefaults.buttonColors(backgroundColor=${getColorModifier(fills[0])})"
+            return "${generatedModifier},\ncolors·=·ButtonDefaults.buttonColors(${buttonColorsPropertyText}=${getColorModifier(fills[0])})"
         }
 
         fun generateModifier(text: Text): String {
