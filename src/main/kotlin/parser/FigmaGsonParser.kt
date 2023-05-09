@@ -20,6 +20,7 @@ class FigmaGsonParser: Parser {
                     NodeType.COMPONENT.name -> context.deserialize(json, Component::class.java)
                     NodeType.VECTOR.name -> context.deserialize(json, Vector::class.java)
                     NodeType.LINE.name -> context.deserialize(json, Line::class.java)
+                    NodeType.RECTANGLE.name -> context.deserialize(json, RectangleNode::class.java)
                     else -> context.deserialize(json, BaseComponent::class.java)
                 }
             }
@@ -31,7 +32,7 @@ class FigmaGsonParser: Parser {
 
             return Result.success(rootDocument)
         } catch (e: JsonParseException) {
-            return Result.failure("Failed to parse input: ${e.message} ${e.localizedMessage} ${e.stackTrace.toString()}")
+            return Result.failure("Failed to parse input: ${e.message} ${e.localizedMessage} ${e.stackTrace}")
         }
     }
 }

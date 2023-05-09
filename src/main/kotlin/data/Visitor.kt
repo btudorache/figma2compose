@@ -10,6 +10,8 @@ interface Visitor<T> {
 
     fun visit(page: Page, additionalData: AdditionalData? = null): T
 
+    fun visit(rectangleNode: RectangleNode, additionalData: AdditionalData? = null): T
+
     fun visit(frame: Frame, additionalData: AdditionalData? = null): T
 
     fun visit(instance: Instance, additionalData: AdditionalData? = null): T

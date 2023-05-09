@@ -19,9 +19,12 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
     private lateinit var currentImports: MutableSet<String>
     private lateinit var componentMappings: MutableMap<String, String>
 
-    // TODO: add file builder for separate m3 components file
     private lateinit var mainFileBuilder: FileSpec.Builder
+    private lateinit var listElementMappings: MutableMap<String, RootComponentDescription>
 
+    fun setListElementMappings(listElementMappings: MutableMap<String, RootComponentDescription>) {
+        this.listElementMappings = listElementMappings
+    }
     override fun visit(rootDocument: RootDocument, additionalData: AdditionalData?): GeneratorResult {
         this.componentDescriptions = rootDocument.componentDescriptions
         rootDocument.document.accept(this, null)
@@ -47,6 +50,10 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
         return GeneratorResult()
     }
 
+    override fun visit(rectangleNode: RectangleNode, additionalData: AdditionalData?): GeneratorResult {
+        return GeneratorResult()
+    }
+
     override fun visit(frame: Frame, additionalData: AdditionalData?): GeneratorResult {
         if (frame.componentType == ComponentType.SCREEN_FRAME) {
             currentImports = mutableSetOf("androidx.compose.runtime.Composable")
@@ -56,7 +63,6 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
 
             val frameComposableFunction = FunSpec.builder(frameName)
                 .addAnnotation(GeneratorHelpers.getComposableAnnotation())
-                // TODO: specify parameters for column
                 .beginControlFlow("Column(verticalArrangement=Arrangement.SpaceAround,·horizontalAlignment=Alignment.CenterHorizontally)")
 
             val sortedGeneratorResults = frame.components
@@ -110,7 +116,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
 
     override fun visit(instance: Instance, additionalData: AdditionalData?): GeneratorResult {
         if (instance.componentType.isM3Tag) {
-            return M3GeneratorHelpers.generateM3Component(instance, componentDescriptions, currentImports)
+            return M3GeneratorHelpers.generateM3Component(instance, componentDescriptions, currentImports, listElementMappings)
         }
 
         val codeBlockBuilder = CodeBlock.builder()

@@ -8,7 +8,8 @@ import data.nodes.enums.LayoutAlign
 import data.nodes.properties.*
 import data.nodes.properties.Vector
 
-data class Vector(
+data class RectangleNode(
+    // properties shared with vector
     val blendMode: BlendMode,
     val preserveRatio: Boolean,
     val layoutAlign: LayoutAlign,
@@ -27,8 +28,13 @@ data class Vector(
     val strokes: Array<Paint>,
     val strokeWeight: Int,
     // key is of type StyleType
-    val styles: Map<String, String>
+    val styles: Map<String, String>,
+
+    // own properties
+    val cornerRadius: Float,
+    val rectangleCornerRadii: Array<Float>
 ) : BaseComponent() {
+
     override fun <T> accept(visitor: Visitor<T>, additionalData: AdditionalData?): T {
         return visitor.visit(this, additionalData)
     }

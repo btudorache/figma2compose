@@ -39,6 +39,10 @@ class PrintVisitor : Visitor<Unit> {
         indent--
     }
 
+    override fun visit(rectangleNode: RectangleNode, additionalData: AdditionalData?) {
+        printIndent("Vector: ${rectangleNode.name}")
+    }
+
     override fun visit(frame: Frame, additionalData: AdditionalData?) {
         printIndent("Frame: ${frame.name}")
         indent++

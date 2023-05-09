@@ -4,10 +4,13 @@ import data.AdditionalData
 import data.Visitor
 import data.nodes.*
 import data.nodes.RootDocument
+import data.nodes.properties.root.RootComponentDescription
 
 class AnalyserVisitor : Visitor<AnalyserResult> {
-    val errorMessages = mutableListOf<String>()
-    val warningsMessages = mutableListOf<String>()
+    private val errorMessages = mutableListOf<String>()
+    private val warningsMessages = mutableListOf<String>()
+    private lateinit var componentDescriptions: Map<String, RootComponentDescription>
+    private val listElementMappings = mutableMapOf<String, RootComponentDescription>()
 
     private fun sanitizeString(str: String): String {
         return str.replace("/", "")
@@ -38,9 +41,14 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
     }
 
     override fun visit(rootDocument: RootDocument, additionalData: AdditionalData?): AnalyserResult {
+        this.componentDescriptions = rootDocument.componentDescriptions
         rootDocument.document.accept(this, null)
 
-        return AnalyserResult(errorMessages = errorMessages, warningsMessages = warningsMessages)
+        return AnalyserResult(
+            errorMessages = errorMessages,
+            warningsMessages = warningsMessages,
+            listElementMappings = listElementMappings
+        )
     }
 
     override fun visit(document: Document, additionalData: AdditionalData?): AnalyserResult {
@@ -56,6 +64,10 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
             frame.accept(this, AdditionalData(page, page.type))
         }
 
+        return AnalyserResult()
+    }
+
+    override fun visit(rectangleNode: RectangleNode, additionalData: AdditionalData?): AnalyserResult {
         return AnalyserResult()
     }
 
@@ -83,6 +95,11 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
         val componentType = ComponentType.findTaggedComponentType(instance.name)
         if (tagIsUnknown(componentType, instance.name)) {
             return AnalyserResult(ComponentType.UNKNOWN)
+        }
+
+        if (componentType == ComponentType.M3_LIST_ITEM) {
+            val listItemId = ComponentType.findListItemId(instance.name)
+            this.componentDescriptions[instance.componentId]?.let { this.listElementMappings.put(listItemId, it) }
         }
 
         instance.componentType = componentType

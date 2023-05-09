@@ -30,6 +30,10 @@ class FigmaComposeConverter(
             return Result.failure("Failed to analyse input: ${analyserResult.errorMessages}")
         }
 
+        if (analyserResult.listElementMappings != null) {
+            (generator as ComposeGeneratorVisitor).setListElementMappings(analyserResult.listElementMappings)
+        }
+
         // used for debugging
         componentRoot.accept(PrintVisitor())
 

@@ -81,7 +81,20 @@ class M3GeneratorHelpers {
             return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = instance.absoluteRenderBounds)
         }
 
-        fun generateM3Component(instance: Instance, componentDescriptions: Map<String, RootComponentDescription>, currentImports: MutableSet<String>): GeneratorResult {
+        private fun generateM3List(instance: Instance,
+                                   currentImports: MutableSet<String>,
+                                   componentDescription: RootComponentDescription?,
+                                   listElementMappings: MutableMap<String, RootComponentDescription>
+                                ): GeneratorResult {
+            // TODO: generate m3 list
+            return GeneratorResult()
+        }
+
+        fun generateM3Component(instance: Instance,
+                                componentDescriptions: Map<String, RootComponentDescription>,
+                                currentImports: MutableSet<String>,
+                                listElementMappings: MutableMap<String, RootComponentDescription>
+                            ): GeneratorResult {
             val componentDescription = componentDescriptions.getValue(instance.componentId)
             return when (instance.componentType) {
                 ComponentType.M3_BUTTON -> {
@@ -89,6 +102,12 @@ class M3GeneratorHelpers {
                 }
                 ComponentType.M3_TEXT_FIELD -> {
                     generateM3TextField(instance, currentImports, componentDescription)
+                }
+                ComponentType.M3_LIST -> {
+                    generateM3List(instance, currentImports, componentDescription, listElementMappings)
+                }
+                ComponentType.M3_LIST_ITEM -> {
+                    GeneratorResult()
                 }
                 else -> {
                     GeneratorResult()
