@@ -12,6 +12,7 @@ import generator.M3Types.TextFieldType
 
 class M3GeneratorHelpers {
     companion object {
+        private val m3ListSize = 4
         private fun generateM3Button(instance: Instance, currentImports: MutableSet<String>, componentDescription: RootComponentDescription?): GeneratorResult {
             var buttonType = "Button"
             if (componentDescription != null) {
@@ -87,7 +88,30 @@ class M3GeneratorHelpers {
                                    listElementMappings: MutableMap<String, RootComponentDescription>
                                 ): GeneratorResult {
             // TODO: generate m3 list
-            return GeneratorResult()
+            val listElemMappingName = ComponentType.findListItemId(instance.name)
+            val listElemDescription = listElementMappings[listElemMappingName]
+//            println(componentDescription)
+
+            var listDenisty = 1
+            val match = Regex("(\\d) Density").find(componentDescription!!.name)
+
+            if (match != null) {
+                val (valueMatched) = match.destructured
+                listDenisty = valueMatched.toInt()
+            }
+
+            val codeBlockBuilder = CodeBlock.builder().beginControlFlow("Column")
+            repeat(m3ListSize) {
+                codeBlockBuilder.addStatement("ListItem(headlineContent = { Text(\"Three line list item\") })")
+                if (it != m3ListSize - 1) {
+                    codeBlockBuilder.addStatement("Divider(thickness=${listDenisty}.dp)")
+                }
+            }
+            codeBlockBuilder.endControlFlow()
+
+            // TODO: add correct import
+            currentImports.add("")
+            return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = instance.absoluteRenderBounds)
         }
 
         fun generateM3Component(instance: Instance,
