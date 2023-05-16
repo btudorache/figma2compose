@@ -69,7 +69,7 @@ class M3GeneratorHelpers {
                         "OutlinedTextField"
                     }
                     else -> {
-                        currentImports.add("androidx.compose.material3.Button")
+                        currentImports.add("androidx.compose.material3.TextField")
                         "TextField"
                     }
                 }
@@ -87,10 +87,64 @@ class M3GeneratorHelpers {
                                    componentDescription: RootComponentDescription?,
                                    listElementMappings: MutableMap<String, RootComponentDescription>
                                 ): GeneratorResult {
-            // TODO: generate m3 list
             val listElemMappingName = ComponentType.findListItemId(instance.name)
             val listElemDescription = listElementMappings[listElemMappingName]
-//            println(componentDescription)
+
+            val listElemDescriptionMap = listElemDescription!!.name
+                .split(", ")
+                .associate {
+                    val (left, right) = it.split("=")
+                    left to right
+                }
+            val listElemProperties = mutableListOf("headlineContent = { Text(\"headline text\") }")
+
+            when (listElemDescriptionMap["Leading"]!!) {
+                "Icon" -> {
+                    listElemProperties.add("leadingContent = { Icon(Icons.Outlined.Lock, contentDescription = \"Localized description\") }")
+                    currentImports.add("androidx.compose.material3.Icon")
+                    currentImports.add("androidx.compose.material.icons.Icons")
+                }
+                "Checkbox" -> {
+                    listElemProperties.add("leadingContent = { Checkbox(checked=null,onCheckedChange={}) }")
+                    currentImports.add("androidx.compose.material3.Checkbox")
+                }
+                "RadioButton" -> {
+                    listElemProperties.add("leadingContent = { RadioButton(selected=null,onClick={}) }")
+                    currentImports.add("androidx.compose.material3.RadioButton")
+                }
+                "Switch" -> {
+                    listElemProperties.add("leadingContent = { Switch(checked=null,onCheckedChange={}) }")
+                    currentImports.add("androidx.compose.material3.Switch")
+                }
+            }
+
+            when (listElemDescriptionMap["Trailing"]!!) {
+                "Icon" -> {
+                    listElemProperties.add("trailingContent = { Icon(Icons.Outlined.Lock, contentDescription = \"Localized description\") }")
+                    currentImports.add("androidx.compose.material3.Icon")
+                    currentImports.add("androidx.compose.material.icons.Icons")
+                }
+                "Checkbox" -> {
+                    listElemProperties.add("trailingContent = { Checkbox(checked=null,onCheckedChange={}) }")
+                    currentImports.add("androidx.compose.material3.Checkbox")
+                }
+                "RadioButton" -> {
+                    listElemProperties.add("trailingContent = { RadioButton(selected=null,onClick={}) }")
+                    currentImports.add("androidx.compose.material3.RadioButton")
+                }
+                "Switch" -> {
+                    listElemProperties.add("trailingContent = { Switch(checked=null,onCheckedChange={}) }")
+                    currentImports.add("androidx.compose.material3.Switch")
+                }
+            }
+
+            if (listElemDescriptionMap["Show overline"]!!.toBoolean()) {
+                listElemProperties.add("overlineContent = { Text(\"Overline text\") }")
+            }
+
+            if (listElemDescriptionMap["Show supporting text"]!!.toBoolean()) {
+                listElemProperties.add("supportingContent = { Text(\"Supporting text\") }")
+            }
 
             var listDenisty = 1
             val match = Regex("(\\d) Density").find(componentDescription!!.name)
@@ -102,15 +156,14 @@ class M3GeneratorHelpers {
 
             val codeBlockBuilder = CodeBlock.builder().beginControlFlow("Column")
             repeat(m3ListSize) {
-                codeBlockBuilder.addStatement("ListItem(headlineContent = { Text(\"Three line list item\") })")
+                codeBlockBuilder.addStatement("ListItem(${listElemProperties.joinToString(separator = ",")})")
                 if (it != m3ListSize - 1) {
                     codeBlockBuilder.addStatement("Divider(thickness=${listDenisty}.dp)")
                 }
             }
             codeBlockBuilder.endControlFlow()
 
-            // TODO: add correct import
-            currentImports.add("")
+            currentImports.add("androidx.compose.material3.ListItem")
             return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = instance.absoluteRenderBounds)
         }
 
