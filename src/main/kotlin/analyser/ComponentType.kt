@@ -8,7 +8,8 @@ enum class ComponentType(val isTag: Boolean, val isM3Tag: Boolean, val tag: Stri
     ROW(true, false, "row"),
 
     M3_BUTTON(true, true, "m3:button"), M3_TEXT_FIELD(true, true, "m3:text-field"),
-    M3_LIST_ITEM(true, true, "m3:list-item"), M3_LIST(true, true, "m3:list");
+    M3_LIST_ITEM(true, true, "m3:list-item"), M3_LIST(true, true, "m3:list"),
+    M3_CHECKBOX(true, true, "m3:checkbox");
 
     companion object {
         private val taggedComponentTypes = ComponentType.values().filter { componentType -> componentType.isTag }

@@ -67,6 +67,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
 
             val sortedGeneratorResults = frame.components
                 .map { component -> component.accept(this, null) }
+                // Column elements have to be sorted by y
                 .sortedBy { result ->
                     if (result.absoluteRenderBounds != null) {
                         return@sortedBy result.absoluteRenderBounds.y
@@ -132,6 +133,25 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
         } else if (instance.componentType == ComponentType.ROW) {
             currentImports.add(GeneratorHelpers.ROW_IMPORT)
             codeBlockBuilder.beginControlFlow("Row(modifier=Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceAround)")
+
+            instance.components
+                .map { component -> component.accept(this, null) }
+                // Row elements have to be sorted by x
+                .sortedBy { result ->
+                    if (result.absoluteRenderBounds != null) {
+                        return@sortedBy result.absoluteRenderBounds.x
+                    } else {
+                        return@sortedBy 0.0
+                    }
+                }
+                .forEach { generatorResult ->
+                    if (generatorResult.statement != null) {
+                        codeBlockBuilder.add(generatorResult.statement)
+                    }
+                }
+
+            codeBlockBuilder.endControlFlow()
+            return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = instance.absoluteRenderBounds)
         } else {
             if (componentMappings.containsKey(instance.componentId)) {
                 val componentFunctionName = componentMappings[instance.componentId]
@@ -144,11 +164,20 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
                         .addParameter("modifier", getModifierType())
                         .beginControlFlow("Column(modifier=modifier${colorString},·verticalArrangement=Arrangement.SpaceAround,·horizontalAlignment=Alignment.CenterHorizontally)")
 
-                instance.components.forEach { component ->
-                    val generatorResult = component.accept(this)
-                    if (generatorResult.statement != null) {
-                        composableFunction.addStatement(generatorResult.statement.toString())
+                instance.components
+                    .map { component -> component.accept(this, null) }
+                    // Column elements have to be sorted by y
+                    .sortedBy { result ->
+                        if (result.absoluteRenderBounds != null) {
+                            return@sortedBy result.absoluteRenderBounds.y
+                        } else {
+                            return@sortedBy 0.0
+                        }
                     }
+                    .forEach { generatorResult ->
+                        if (generatorResult.statement != null) {
+                            composableFunction.addStatement(generatorResult.statement.toString())
+                        }
                 }
 
                 composableFunction.endControlFlow()
@@ -186,6 +215,25 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
         } else if (component.componentType == ComponentType.ROW) {
             currentImports.add(GeneratorHelpers.ROW_IMPORT)
             codeBlockBuilder.beginControlFlow("Row(modifier=Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceAround)")
+
+            component.components
+                .map { componentChild -> componentChild.accept(this, null) }
+                // Row elements have to be sorted by x
+                .sortedBy { result ->
+                    if (result.absoluteRenderBounds != null) {
+                        return@sortedBy result.absoluteRenderBounds.x
+                    } else {
+                        return@sortedBy 0.0
+                    }
+                }
+                .forEach { generatorResult ->
+                    if (generatorResult.statement != null) {
+                        codeBlockBuilder.add(generatorResult.statement)
+                    }
+                }
+
+            codeBlockBuilder.endControlFlow()
+            return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = component.absoluteRenderBounds)
         } else {
             if (componentMappings.containsKey(component.id)) {
                 val componentFunctionName = componentMappings[component.id]
@@ -198,8 +246,17 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
                     .addParameter("modifier", getModifierType())
                     .beginControlFlow("Column(modifier=modifier${colorString},·verticalArrangement=Arrangement.SpaceAround,·horizontalAlignment=Alignment.CenterHorizontally)")
 
-                component.components.forEach { componentChild ->
-                    val generatorResult = componentChild.accept(this)
+                component.components
+                    .map { componentChild -> componentChild.accept(this, null) }
+                    // Column elements have to be sorted by y
+                    .sortedBy { result ->
+                        if (result.absoluteRenderBounds != null) {
+                            return@sortedBy result.absoluteRenderBounds.y
+                        } else {
+                            return@sortedBy 0.0
+                        }
+                    }
+                    .forEach { generatorResult ->
                     if (generatorResult.statement != null) {
                         composableFunction.addStatement(generatorResult.statement.toString())
                     }

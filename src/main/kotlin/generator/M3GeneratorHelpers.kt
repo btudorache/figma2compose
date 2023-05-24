@@ -200,6 +200,9 @@ class M3GeneratorHelpers {
                 ComponentType.M3_LIST -> {
                     generateM3List(instance, currentImports, componentDescription, listElementMappings)
                 }
+                ComponentType.M3_CHECKBOX -> {
+                    generateM3CheckBox(instance, currentImports, componentDescription)
+                }
                 ComponentType.M3_LIST_ITEM -> {
                     GeneratorResult()
                 }
@@ -207,6 +210,19 @@ class M3GeneratorHelpers {
                     GeneratorResult()
                 }
             }
+        }
+
+        private fun generateM3CheckBox(
+            instance: Instance,
+            currentImports: MutableSet<String>,
+            componentDescription: RootComponentDescription
+        ): GeneratorResult {
+            val checkboxStateText = componentDescription.name.split(", ")[0].split("=")[1]
+            val checkboxState = if (checkboxStateText == "Selected") "true" else "false"
+            currentImports.add(MATERIAL3_CHECKBOX_IMPORT)
+
+            val codeBlockBuilder = CodeBlock.builder().addStatement("Checkbox(checked=${checkboxState},onCheckedChange={})")
+            return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = instance.absoluteRenderBounds)
         }
     }
 }
