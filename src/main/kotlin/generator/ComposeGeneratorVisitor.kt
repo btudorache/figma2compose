@@ -56,7 +56,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
 
     override fun visit(frame: Frame, additionalData: AdditionalData?): GeneratorResult {
         if (frame.componentType == ComponentType.SCREEN_FRAME) {
-            currentImports = mutableSetOf("androidx.compose.runtime.Composable")
+            currentImports = mutableSetOf(GeneratorHelpers.COMPOSABLE_IMPORT, GeneratorHelpers.COLUMN_IMPORT)
             componentMappings = mutableMapOf()
             val frameName = GeneratorHelpers.generateIdentifier(frame.name)
             mainFileBuilder = FileSpec.builder("", frameName)
@@ -89,7 +89,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
         } else if (frame.componentType.isTag) {
             val codeBlockBuilder = CodeBlock.builder()
             if (frame.componentType == ComponentType.BUTTON) {
-                currentImports.add("androidx.compose.material.Button")
+                currentImports.add(GeneratorHelpers.MATERIAL_BUTTON_IMPORT)
                 codeBlockBuilder.beginControlFlow("Button(onClick = {}, ${generateButtonModifier(frame.absoluteRenderBounds, frame.fills)})")
             }
 
@@ -121,14 +121,17 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
 
         val codeBlockBuilder = CodeBlock.builder()
         if (instance.componentType == ComponentType.TEXT_FIELD) {
-            currentImports.add("androidx.compose.material.TextField")
+            currentImports.add(GeneratorHelpers.MATERIAL_TEXTFIELD_IMPORT)
             val textGeneratorResult = instance.components[0].accept(this, null)
             codeBlockBuilder.add(buildCodeBlock { addStatement("TextField(value=\"\", onValueChange={}, placeholder={·${textGeneratorResult.statement}·}, ${generateModifier(instance)})")})
 
             return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = instance.absoluteRenderBounds)
         } else if (instance.componentType == ComponentType.BUTTON) {
-            currentImports.add("androidx.compose.material.Button")
+            currentImports.add(GeneratorHelpers.MATERIAL_BUTTON_IMPORT)
             codeBlockBuilder.beginControlFlow("Button(onClick = {}, ${generateButtonModifier(instance.absoluteRenderBounds, instance.fills)})")
+        } else if (instance.componentType == ComponentType.ROW) {
+            currentImports.add(GeneratorHelpers.ROW_IMPORT)
+            codeBlockBuilder.beginControlFlow("Row(modifier=Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceAround)")
         } else {
             if (componentMappings.containsKey(instance.componentId)) {
                 val componentFunctionName = componentMappings[instance.componentId]
@@ -173,13 +176,16 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
     override fun visit(component: Component, additionalData: AdditionalData?): GeneratorResult {
         val codeBlockBuilder = CodeBlock.builder()
         if (component.componentType == ComponentType.TEXT_FIELD) {
-            currentImports.add("androidx.compose.material.TextField")
+            currentImports.add(GeneratorHelpers.MATERIAL_TEXTFIELD_IMPORT)
             val textGeneratorResult = component.components[0].accept(this, null)
             codeBlockBuilder.add(buildCodeBlock { addStatement("TextField(value=\"\", onValueChange={}, placeholder={·${textGeneratorResult.statement}·}, ${generateModifier(component)})")})
 
             return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = component.absoluteRenderBounds)
         } else if (component.componentType == ComponentType.BUTTON) {
             codeBlockBuilder.beginControlFlow("Button(onClick = {}, ${generateButtonModifier(component.absoluteRenderBounds, component.fills)})")
+        } else if (component.componentType == ComponentType.ROW) {
+            currentImports.add(GeneratorHelpers.ROW_IMPORT)
+            codeBlockBuilder.beginControlFlow("Row(modifier=Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceAround)")
         } else {
             if (componentMappings.containsKey(component.id)) {
                 val componentFunctionName = componentMappings[component.id]
@@ -230,7 +236,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
     }
 
     override fun visit(text: Text, additionalData: AdditionalData?): GeneratorResult {
-        currentImports.add("androidx.compose.material.Text")
+        currentImports.add(GeneratorHelpers.MATERIAL_TEXT_IMPORT)
         return GeneratorResult(statement = buildCodeBlock { addStatement("Text(${generateModifier(text)})")},
                                absoluteRenderBounds = text.absoluteRenderBounds)
     }

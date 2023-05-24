@@ -12,6 +12,23 @@ import generator.M3Types.TextFieldType
 
 class M3GeneratorHelpers {
     companion object {
+        private const val MATERIAL3_ELEVATED_BUTTON_IMPORT = "androidx.compose.material3.ElevatedButton"
+        private const val MATERIAL3_OUTLINED_BUTTON_IMPORT = "androidx.compose.material3.OutlinedButton"
+        private const val MATERIAL3_TEXT_BUTTON_IMPORT = "androidx.compose.material3.TextButton"
+        private const val MATERIAL3_RADIO_BUTTON_IMPORT = "androidx.compose.material3.RadioButton"
+        private const val MATERIAL3_FILLED_TONAL_BUTTON_IMPORT = "androidx.compose.material3.FilledTonalButton"
+        private const val MATERIAL3_BUTTON_IMPORT = "androidx.compose.material3.Button"
+
+        private const val MATERIAL3_TEXT_IMPORT = "androidx.compose.material3.Text"
+        private const val MATERIAL3_TEXTFIELD_IMPORT = "androidx.compose.material3.TextField"
+        private const val MATERIAL3_OUTLINED_TEXTFIELD_IMPORT = "androidx.compose.material3.OutlinedTextField"
+
+        private const val MATERIAL3_ICON_IMPORT = "androidx.compose.material3.Icon"
+        private const val MATERIAL3_SWITCH_IMPORT = "androidx.compose.material3.Switch"
+        private const val MATERIAL3_CHECKBOX_IMPORT = "androidx.compose.material3.Checkbox"
+
+        private const val MATERIAL3_LIST_ITEM_IMPORT = "androidx.compose.material3.ListItem"
+
         private val m3ListSize = 4
         private fun generateM3Button(instance: Instance, currentImports: MutableSet<String>, componentDescription: RootComponentDescription?): GeneratorResult {
             var buttonType = "Button"
@@ -19,31 +36,31 @@ class M3GeneratorHelpers {
                 val buttonConfiguration = componentDescription.name.split(", ")[0].split("=")[1]
                 buttonType = when (buttonConfiguration) {
                     ButtonType.ELEVATED.type -> {
-                        currentImports.add("androidx.compose.material3.ElevatedButton")
+                        currentImports.add(MATERIAL3_ELEVATED_BUTTON_IMPORT)
                         "ElevatedButton"
                     }
                     ButtonType.OUTLINED.type -> {
-                        currentImports.add("androidx.compose.material3.OutlinedButton")
+                        currentImports.add(MATERIAL3_OUTLINED_BUTTON_IMPORT)
                         "OutlinedButton"
                     }
                     ButtonType.TEXT.type -> {
-                        currentImports.add("androidx.compose.material3.TextButton")
+                        currentImports.add(MATERIAL3_TEXT_BUTTON_IMPORT)
                         "TextButton"
                     }
                     ButtonType.FILLED.type,
                     ButtonType.TONAL.type -> {
-                        currentImports.add("androidx.compose.material3.FilledTonalButton")
+                        currentImports.add(MATERIAL3_FILLED_TONAL_BUTTON_IMPORT)
                         "FilledTonalButton"
                     }
                     else -> {
-                        currentImports.add("androidx.compose.material3.Button")
+                        currentImports.add(MATERIAL3_BUTTON_IMPORT)
                         "Button"
                     }
                 }
             } else {
-                currentImports.add("androidx.compose.material3.Button")
+                currentImports.add(MATERIAL3_BUTTON_IMPORT)
             }
-            currentImports.add("androidx.compose.material3.Text")
+            currentImports.add(MATERIAL3_TEXT_IMPORT)
 
             val codeBlockBuilder = CodeBlock.builder()
             codeBlockBuilder.beginControlFlow("${buttonType}(onClick = {}, ${GeneratorHelpers.generateButtonModifier(instance.absoluteRenderBounds, instance.fills, true)})")
@@ -61,22 +78,22 @@ class M3GeneratorHelpers {
                 val textFieldConfiguration = componentDescription.name.split(", ")[0].split("=")[1]
                 textFieldType = when (textFieldConfiguration) {
                     TextFieldType.FILLED.type -> {
-                        currentImports.add("androidx.compose.material3.TextField")
+                        currentImports.add(MATERIAL3_TEXTFIELD_IMPORT)
                         "TextField"
                     }
                     TextFieldType.OUTLINED.type -> {
-                        currentImports.add("androidx.compose.material3.OutlinedTextField")
+                        currentImports.add(MATERIAL3_OUTLINED_TEXTFIELD_IMPORT)
                         "OutlinedTextField"
                     }
                     else -> {
-                        currentImports.add("androidx.compose.material3.TextField")
+                        currentImports.add(MATERIAL3_TEXTFIELD_IMPORT)
                         "TextField"
                     }
                 }
             } else {
-                currentImports.add("androidx.compose.material3.Button")
+                currentImports.add(MATERIAL3_BUTTON_IMPORT)
             }
-            currentImports.add("androidx.compose.material3.Text")
+            currentImports.add(MATERIAL3_TEXT_IMPORT)
 
             val codeBlockBuilder = CodeBlock.builder().addStatement("${textFieldType}(value = \"\", onValueChange = {}, label = { Text(\"Label\") }, ${GeneratorHelpers.generateModifier(instance)})")
             return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = instance.absoluteRenderBounds)
@@ -101,40 +118,40 @@ class M3GeneratorHelpers {
             when (listElemDescriptionMap["Leading"]!!) {
                 "Icon" -> {
                     listElemProperties.add("leadingContent = { Icon(Icons.Outlined.Lock, contentDescription = \"Localized description\") }")
-                    currentImports.add("androidx.compose.material3.Icon")
+                    currentImports.add(MATERIAL3_ICON_IMPORT)
                     currentImports.add("androidx.compose.material.icons.Icons")
                 }
-                "Checkbox" -> {
-                    listElemProperties.add("leadingContent = { Checkbox(checked=null,onCheckedChange={}) }")
-                    currentImports.add("androidx.compose.material3.Checkbox")
+                "Check box" -> {
+                    listElemProperties.add("leadingContent = { Checkbox(checked=true,onCheckedChange={}) }")
+                    currentImports.add(MATERIAL3_CHECKBOX_IMPORT)
                 }
-                "RadioButton" -> {
-                    listElemProperties.add("leadingContent = { RadioButton(selected=null,onClick={}) }")
-                    currentImports.add("androidx.compose.material3.RadioButton")
+                "Radio Button" -> {
+                    listElemProperties.add("leadingContent = { RadioButton(selected=true,onClick={}) }")
+                    currentImports.add(MATERIAL3_RADIO_BUTTON_IMPORT)
                 }
                 "Switch" -> {
-                    listElemProperties.add("leadingContent = { Switch(checked=null,onCheckedChange={}) }")
-                    currentImports.add("androidx.compose.material3.Switch")
+                    listElemProperties.add("leadingContent = { Switch(checked=true,onCheckedChange={}) }")
+                    currentImports.add(MATERIAL3_SWITCH_IMPORT)
                 }
             }
 
             when (listElemDescriptionMap["Trailing"]!!) {
                 "Icon" -> {
                     listElemProperties.add("trailingContent = { Icon(Icons.Outlined.Lock, contentDescription = \"Localized description\") }")
-                    currentImports.add("androidx.compose.material3.Icon")
+                    currentImports.add(MATERIAL3_ICON_IMPORT)
                     currentImports.add("androidx.compose.material.icons.Icons")
                 }
-                "Checkbox" -> {
-                    listElemProperties.add("trailingContent = { Checkbox(checked=null,onCheckedChange={}) }")
-                    currentImports.add("androidx.compose.material3.Checkbox")
+                "Check box" -> {
+                    listElemProperties.add("trailingContent = { Checkbox(checked=true,onCheckedChange={}) }")
+                    currentImports.add(MATERIAL3_CHECKBOX_IMPORT)
                 }
-                "RadioButton" -> {
-                    listElemProperties.add("trailingContent = { RadioButton(selected=null,onClick={}) }")
-                    currentImports.add("androidx.compose.material3.RadioButton")
+                "Radio Button" -> {
+                    listElemProperties.add("trailingContent = { RadioButton(selected=true,onClick={}) }")
+                    currentImports.add(MATERIAL3_RADIO_BUTTON_IMPORT)
                 }
                 "Switch" -> {
-                    listElemProperties.add("trailingContent = { Switch(checked=null,onCheckedChange={}) }")
-                    currentImports.add("androidx.compose.material3.Switch")
+                    listElemProperties.add("trailingContent = { Switch(checked=true,onCheckedChange={}) }")
+                    currentImports.add(MATERIAL3_SWITCH_IMPORT)
                 }
             }
 
@@ -163,7 +180,7 @@ class M3GeneratorHelpers {
             }
             codeBlockBuilder.endControlFlow()
 
-            currentImports.add("androidx.compose.material3.ListItem")
+            currentImports.add(MATERIAL3_LIST_ITEM_IMPORT)
             return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = instance.absoluteRenderBounds)
         }
 

@@ -12,7 +12,13 @@ import java.math.RoundingMode
 
 class GeneratorHelpers {
     companion object {
+        const val COMPOSABLE_IMPORT = "androidx.compose.runtime.Composable"
+        const val COLUMN_IMPORT = "androidx.compose.foundation.layout.Column"
+        const val ROW_IMPORT = "androidx.compose.foundation.layout.Row"
 
+        const val MATERIAL_BUTTON_IMPORT = "androidx.compose.material.Button"
+        const val MATERIAL_TEXTFIELD_IMPORT = "androidx.compose.material.TextField"
+        const val MATERIAL_TEXT_IMPORT = "androidx.compose.material.Text"
         fun getColorModifier(paint: Paint): String {
             val color = paint.color
             val roundedRed = BigDecimal(color.r).setScale(2, RoundingMode.HALF_EVEN)

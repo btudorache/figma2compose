@@ -5,6 +5,7 @@ enum class ComponentType(val isTag: Boolean, val isM3Tag: Boolean, val tag: Stri
     TEXT(false, false), UNTAGGED(false, false), UNKNOWN(false, false),
 
     BUTTON(true, false, "button"), TEXT_FIELD(true, false, "text-field"),
+    ROW(true, false, "row"),
 
     M3_BUTTON(true, true, "m3:button"), M3_TEXT_FIELD(true, true, "m3:text-field"),
     M3_LIST_ITEM(true, true, "m3:list-item"), M3_LIST(true, true, "m3:list");
