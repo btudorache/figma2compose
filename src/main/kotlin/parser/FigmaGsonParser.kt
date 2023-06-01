@@ -21,6 +21,7 @@ class FigmaGsonParser: Parser {
                     NodeType.VECTOR.name -> context.deserialize(json, Vector::class.java)
                     NodeType.LINE.name -> context.deserialize(json, Line::class.java)
                     NodeType.RECTANGLE.name -> context.deserialize(json, RectangleNode::class.java)
+                    NodeType.BOOLEAN_OPERATION.name -> context.deserialize(json, BooleanOperation::class.java)
                     else -> context.deserialize(json, BaseComponent::class.java)
                 }
             }

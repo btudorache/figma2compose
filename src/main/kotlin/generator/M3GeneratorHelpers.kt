@@ -29,7 +29,7 @@ class M3GeneratorHelpers {
 
         private const val MATERIAL3_LIST_ITEM_IMPORT = "androidx.compose.material3.ListItem"
 
-        private val m3ListSize = 4
+        private const val m3ListSize = 6
         private fun generateM3Button(instance: Instance, currentImports: MutableSet<String>, componentDescription: RootComponentDescription?): GeneratorResult {
             var buttonType = "Button"
             if (componentDescription != null) {
@@ -117,7 +117,7 @@ class M3GeneratorHelpers {
 
             when (listElemDescriptionMap["Leading"]!!) {
                 "Icon" -> {
-                    listElemProperties.add("leadingContent = { Icon(Icons.Outlined.Lock, contentDescription = \"Localized description\") }")
+                    listElemProperties.add("leadingContent = { Icon(Icons.Default.Person, contentDescription = \"Localized description\") }")
                     currentImports.add(MATERIAL3_ICON_IMPORT)
                     currentImports.add("androidx.compose.material.icons.Icons")
                 }
@@ -137,7 +137,7 @@ class M3GeneratorHelpers {
 
             when (listElemDescriptionMap["Trailing"]!!) {
                 "Icon" -> {
-                    listElemProperties.add("trailingContent = { Icon(Icons.Outlined.Lock, contentDescription = \"Localized description\") }")
+                    listElemProperties.add("trailingContent = { Icon(Icons.Default.Person, contentDescription = \"Localized description\") }")
                     currentImports.add(MATERIAL3_ICON_IMPORT)
                     currentImports.add("androidx.compose.material.icons.Icons")
                 }

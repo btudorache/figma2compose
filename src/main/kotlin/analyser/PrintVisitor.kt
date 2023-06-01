@@ -74,6 +74,10 @@ class PrintVisitor : Visitor<Unit> {
         printIndent("Vector: ${vector.name}")
     }
 
+    override fun visit(booleanOperation: BooleanOperation, additionalData: AdditionalData?) {
+        printIndent("Boolean operation: ${booleanOperation.name} with type: ${booleanOperation.booleanOperation}")
+    }
+
     override fun visit(line: Line, additionalData: AdditionalData?) {
         printIndent("Line: ${line.name}")
     }

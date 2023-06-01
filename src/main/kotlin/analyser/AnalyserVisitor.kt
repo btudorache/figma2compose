@@ -138,6 +138,10 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
         return AnalyserResult()
     }
 
+    override fun visit(booleanOperation: BooleanOperation, additionalData: AdditionalData?): AnalyserResult {
+        return AnalyserResult()
+    }
+
     override fun visit(line: Line, additionalData: AdditionalData?): AnalyserResult {
         return AnalyserResult()
     }

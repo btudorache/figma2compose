@@ -288,6 +288,10 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
         return GeneratorResult()
     }
 
+    override fun visit(booleanOperation: BooleanOperation, additionalData: AdditionalData?): GeneratorResult {
+        return GeneratorResult()
+    }
+
     override fun visit(line: Line, additionalData: AdditionalData?): GeneratorResult {
         return GeneratorResult()
     }

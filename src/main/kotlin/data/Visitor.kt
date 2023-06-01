@@ -20,6 +20,8 @@ interface Visitor<T> {
 
     fun visit(vector: Vector, additionalData: AdditionalData? = null): T
 
+    fun visit(booleanOperation: BooleanOperation, additionalData: AdditionalData? = null): T
+
     fun visit(line: Line, additionalData: AdditionalData? = null): T
 
     fun visit(text: Text, additionalData: AdditionalData? = null): T
