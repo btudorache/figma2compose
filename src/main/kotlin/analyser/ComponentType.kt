@@ -1,15 +1,14 @@
 package analyser
 
-enum class ComponentType(val isTag: Boolean, val isM3Tag: Boolean, val tag: String? = null) {
+enum class ComponentType(val isTag: Boolean, val isM3Tag: Boolean, val tag: String? = null, var additionalData: Any? = null) {
     SCREEN_FRAME(false, false), COMPONENT_FRAME(false, false),
     TEXT(false, false), UNTAGGED(false, false), UNKNOWN(false, false),
 
     BUTTON(true, false, "button"), TEXT_FIELD(true, false, "text-field"),
-    ROW(true, false, "row"),
+    ROW(true, false, "row"), LIST(true, false, "list"),
 
     M3_BUTTON(true, true, "m3:button"), M3_TEXT_FIELD(true, true, "m3:text-field"),
-    M3_LIST_ITEM(true, true, "m3:list-item"), M3_LIST(true, true, "m3:list"),
-    M3_CHECKBOX(true, true, "m3:checkbox");
+    M3_LIST_ITEM(true, true, "m3:list-item"), M3_CHECKBOX(true, true, "m3:checkbox");
 
     companion object {
         private val taggedComponentTypes = ComponentType.values().filter { componentType -> componentType.isTag }
@@ -20,11 +19,11 @@ enum class ComponentType(val isTag: Boolean, val isM3Tag: Boolean, val tag: Stri
             return taggedComponentTypes.find { componentType -> valueMatched.startsWith(componentType.tag!!) } ?: return UNKNOWN
         }
 
-        fun findListItemId(componentName: String): String {
+        fun findListDensity(componentName: String): Int {
             val match = Regex("\\[(.*?)]").find(componentName)
             val (nameMatched) = match!!.destructured
 
-            return nameMatched.split(":").last()
+            return nameMatched.split(":").last().toInt()
         }
     }
 }

@@ -10,7 +10,6 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
     private val errorMessages = mutableListOf<String>()
     private val warningsMessages = mutableListOf<String>()
     private lateinit var componentDescriptions: Map<String, RootComponentDescription>
-    private val listElementMappings = mutableMapOf<String, RootComponentDescription>()
 
     private fun sanitizeString(str: String): String {
         return str.replace("/", "")
@@ -46,8 +45,7 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
 
         return AnalyserResult(
             errorMessages = errorMessages,
-            warningsMessages = warningsMessages,
-            listElementMappings = listElementMappings
+            warningsMessages = warningsMessages
         )
     }
 
@@ -97,9 +95,8 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
             return AnalyserResult(ComponentType.UNKNOWN)
         }
 
-        if (componentType == ComponentType.M3_LIST_ITEM) {
-            val listItemId = ComponentType.findListItemId(instance.name)
-            this.componentDescriptions[instance.componentId]?.let { this.listElementMappings.put(listItemId, it) }
+        if (componentType == ComponentType.LIST) {
+            componentType.additionalData =  ComponentType.findListDensity(instance.name)
         }
 
         instance.componentType = componentType
@@ -121,6 +118,10 @@ class AnalyserVisitor : Visitor<AnalyserResult> {
         val componentType = ComponentType.findTaggedComponentType(component.name)
         if (tagIsUnknown(componentType, component.name)) {
             return AnalyserResult(ComponentType.UNKNOWN)
+        }
+
+        if (componentType == ComponentType.LIST) {
+            componentType.additionalData =  ComponentType.findListDensity(component.name)
         }
 
         component.componentType = componentType

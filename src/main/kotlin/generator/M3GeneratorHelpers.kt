@@ -29,7 +29,7 @@ class M3GeneratorHelpers {
 
         private const val MATERIAL3_LIST_ITEM_IMPORT = "androidx.compose.material3.ListItem"
 
-        private const val m3ListSize = 6
+        const val m3ListItemMultiplier = 3
         private fun generateM3Button(instance: Instance, currentImports: MutableSet<String>, componentDescription: RootComponentDescription?): GeneratorResult {
             var buttonType = "Button"
             if (componentDescription != null) {
@@ -95,19 +95,15 @@ class M3GeneratorHelpers {
             }
             currentImports.add(MATERIAL3_TEXT_IMPORT)
 
-            val codeBlockBuilder = CodeBlock.builder().addStatement("${textFieldType}(value = \"\", onValueChange = {}, label = { Text(\"Label\") }, ${GeneratorHelpers.generateModifier(instance)})")
+            val codeBlockBuilder = CodeBlock.builder().addStatement("${textFieldType}(value = \"\", onValueChange = {}, label = { Text(\"Label\") }, supportingText = { Text(\"Supporting text\") }, ${GeneratorHelpers.generateModifier(instance)})")
             return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = instance.absoluteRenderBounds)
         }
 
-        private fun generateM3List(instance: Instance,
-                                   currentImports: MutableSet<String>,
-                                   componentDescription: RootComponentDescription?,
-                                   listElementMappings: MutableMap<String, RootComponentDescription>
-                                ): GeneratorResult {
-            val listElemMappingName = ComponentType.findListItemId(instance.name)
-            val listElemDescription = listElementMappings[listElemMappingName]
-
-            val listElemDescriptionMap = listElemDescription!!.name
+        private fun generateM3ListItem(instance: Instance,
+                                       currentImports: MutableSet<String>,
+                                       componentDescription: RootComponentDescription?,
+                                      ): GeneratorResult {
+            val listElemDescriptionMap = componentDescription!!.name
                 .split(", ")
                 .associate {
                     val (left, right) = it.split("=")
@@ -163,32 +159,15 @@ class M3GeneratorHelpers {
                 listElemProperties.add("supportingContent = { Text(\"Supporting text\") }")
             }
 
-            var listDenisty = 1
-            val match = Regex("(\\d) Density").find(componentDescription!!.name)
-
-            if (match != null) {
-                val (valueMatched) = match.destructured
-                listDenisty = valueMatched.toInt()
-            }
-
-            val codeBlockBuilder = CodeBlock.builder().beginControlFlow("Column")
-            repeat(m3ListSize) {
-                codeBlockBuilder.addStatement("ListItem(${listElemProperties.joinToString(separator = ",")})")
-                if (it != m3ListSize - 1) {
-                    codeBlockBuilder.addStatement("Divider(thickness=${listDenisty}.dp)")
-                }
-            }
-            codeBlockBuilder.endControlFlow()
-
             currentImports.add(MATERIAL3_LIST_ITEM_IMPORT)
+            val codeBlockBuilder = CodeBlock.builder().addStatement("ListItem(${listElemProperties.joinToString(separator = ",")})")
             return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = instance.absoluteRenderBounds)
         }
 
         fun generateM3Component(instance: Instance,
                                 componentDescriptions: Map<String, RootComponentDescription>,
-                                currentImports: MutableSet<String>,
-                                listElementMappings: MutableMap<String, RootComponentDescription>
-                            ): GeneratorResult {
+                                currentImports: MutableSet<String>
+                               ): GeneratorResult {
             val componentDescription = componentDescriptions.getValue(instance.componentId)
             return when (instance.componentType) {
                 ComponentType.M3_BUTTON -> {
@@ -197,14 +176,11 @@ class M3GeneratorHelpers {
                 ComponentType.M3_TEXT_FIELD -> {
                     generateM3TextField(instance, currentImports, componentDescription)
                 }
-                ComponentType.M3_LIST -> {
-                    generateM3List(instance, currentImports, componentDescription, listElementMappings)
-                }
                 ComponentType.M3_CHECKBOX -> {
                     generateM3CheckBox(instance, currentImports, componentDescription)
                 }
                 ComponentType.M3_LIST_ITEM -> {
-                    GeneratorResult()
+                    generateM3ListItem(instance, currentImports, componentDescription)
                 }
                 else -> {
                     GeneratorResult()

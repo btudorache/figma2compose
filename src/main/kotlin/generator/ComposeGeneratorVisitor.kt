@@ -20,11 +20,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
     private lateinit var componentMappings: MutableMap<String, String>
 
     private lateinit var mainFileBuilder: FileSpec.Builder
-    private lateinit var listElementMappings: MutableMap<String, RootComponentDescription>
 
-    fun setListElementMappings(listElementMappings: MutableMap<String, RootComponentDescription>) {
-        this.listElementMappings = listElementMappings
-    }
     override fun visit(rootDocument: RootDocument, additionalData: AdditionalData?): GeneratorResult {
         this.componentDescriptions = rootDocument.componentDescriptions
         rootDocument.document.accept(this, null)
@@ -117,7 +113,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
 
     override fun visit(instance: Instance, additionalData: AdditionalData?): GeneratorResult {
         if (instance.componentType.isM3Tag) {
-            return M3GeneratorHelpers.generateM3Component(instance, componentDescriptions, currentImports, listElementMappings)
+            return M3GeneratorHelpers.generateM3Component(instance, componentDescriptions, currentImports)
         }
 
         val codeBlockBuilder = CodeBlock.builder()
@@ -132,7 +128,7 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
             codeBlockBuilder.beginControlFlow("Button(onClick = {}, ${generateButtonModifier(instance.absoluteRenderBounds, instance.fills)})")
         } else if (instance.componentType == ComponentType.ROW) {
             currentImports.add(GeneratorHelpers.ROW_IMPORT)
-            codeBlockBuilder.beginControlFlow("Row(modifier=Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceAround)")
+            codeBlockBuilder.beginControlFlow("Row(modifier=Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceAround,verticalAlignment=Alignment.CenterVertically)")
 
             instance.components
                 .map { component -> component.accept(this, null) }
@@ -212,9 +208,26 @@ class ComposeGeneratorVisitor : Visitor<GeneratorResult> {
             return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = component.absoluteRenderBounds)
         } else if (component.componentType == ComponentType.BUTTON) {
             codeBlockBuilder.beginControlFlow("Button(onClick = {}, ${generateButtonModifier(component.absoluteRenderBounds, component.fills)})")
+        } else if (component.componentType == ComponentType.LIST) {
+            codeBlockBuilder.beginControlFlow("Column()")
+            component.components
+                .map { componentChild -> componentChild.accept(this, null) }
+                .forEachIndexed { index, generatorResult ->
+                    if (generatorResult.statement != null) {
+                        repeat(M3GeneratorHelpers.m3ListItemMultiplier) {
+                            codeBlockBuilder.add(generatorResult.statement)
+                            if (it != M3GeneratorHelpers.m3ListItemMultiplier - 1 || index != component.components.size - 1) {
+                                codeBlockBuilder.addStatement("Divider(thickness=${component.componentType.additionalData}.dp)")
+                            }
+                        }
+                    }
+            }
+
+            codeBlockBuilder.endControlFlow()
+            return GeneratorResult(statement = codeBlockBuilder.build(), absoluteRenderBounds = component.absoluteRenderBounds)
         } else if (component.componentType == ComponentType.ROW) {
             currentImports.add(GeneratorHelpers.ROW_IMPORT)
-            codeBlockBuilder.beginControlFlow("Row(modifier=Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceAround)")
+            codeBlockBuilder.beginControlFlow("Row(modifier=Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceAround,verticalAlignment=Alignment.CenterVertically)")
 
             component.components
                 .map { componentChild -> componentChild.accept(this, null) }
