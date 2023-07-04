@@ -35,3 +35,4 @@ local.properties
 compose_out/
 resources.txt
 notes.txt
+figma_api_token

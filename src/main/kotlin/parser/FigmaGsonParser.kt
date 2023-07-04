@@ -10,7 +10,7 @@ import data.nodes.RootDocument
 class FigmaGsonParser: Parser {
     override fun parse(input: String): Result<RootDocument> {
         try {
-            val baseComponentAdapter = JsonDeserializer<BaseComponent> { json, typeOfT, context ->
+            val baseComponentAdapter = JsonDeserializer<BaseComponent> { json, _, context ->
                 val nodeObject = json.asJsonObject
                 val nodeTypeElement = nodeObject.get(BaseComponent::type.name)
                 return@JsonDeserializer when (nodeTypeElement.asString) {

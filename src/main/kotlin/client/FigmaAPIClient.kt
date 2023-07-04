@@ -16,7 +16,7 @@ class FigmaAPIClient(
     private val FIGMA_FILES_ENDPOINT = "https://api.figma.com/v1/files"
     private val FIGMA_TOKEN_HEADER = "X-Figma-Token"
     // TODO: fetch API token from config/env
-    private val figmaApiToken = "figd_HUMiSMq837EX_1Fm7iCO90V0j1NI2yU7gFhUGH4K"
+    private val figmaApiToken = ""
 
     override fun loadFromApi(fileId: String): Result<String> {
         try {
