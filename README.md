@@ -10,7 +10,7 @@ To Jetpack Compose Android files:
 
 ![Jetpack Compose screen](/media/fragment_cod_generat.PNG)
 
-We propose a tag based approach to generate native Android components from Figma natives (a tag looks like *[example-tag]* used in the name of a Figma structure*). A project can contain any number of screens, each with their own tagged components or nested components. 
+We propose a tag based approach to generate native Android components from Figma natives (a tag looks like *[example-tag]* used in the name of a Figma structure). A project can contain any number of screens, each with their own tagged components or nested components. 
 
 ## Usage
 
