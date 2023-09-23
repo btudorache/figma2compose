@@ -15,14 +15,12 @@ class FigmaAPIClient(
 ) : APIClient {
     private val FIGMA_FILES_ENDPOINT = "https://api.figma.com/v1/files"
     private val FIGMA_TOKEN_HEADER = "X-Figma-Token"
-    // TODO: fetch API token from config/env
-    private val figmaApiToken = ""
 
-    override fun loadFromApi(fileId: String): Result<String> {
+    override fun loadFromApi(fileId: String, apiToken: String): Result<String> {
         try {
             val request = HttpRequest.newBuilder()
                 .uri(URI.create("${FIGMA_FILES_ENDPOINT}/${fileId}"))
-                .header(FIGMA_TOKEN_HEADER, figmaApiToken)
+                .header(FIGMA_TOKEN_HEADER, apiToken)
                 .build()
 
             val response = httpClient.send(request, BodyHandlers.ofString())

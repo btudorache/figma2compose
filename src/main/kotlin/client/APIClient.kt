@@ -3,5 +3,5 @@ package client
 import data.Result
 
 interface APIClient {
-    fun loadFromApi(fileId: String): Result<String>
+    fun loadFromApi(fileId: String, apiToken: String): Result<String>
 }
