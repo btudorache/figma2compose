@@ -2,7 +2,7 @@
 
 Automatically generate Compose code from Figma designs.
 
-Go from directly from Figma design screens:
+Go directly from Figma design screens:
 
 ![Figma design screen](/media/ecran_figma.PNG)
 
