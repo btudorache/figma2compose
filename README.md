@@ -4,18 +4,18 @@ Automatically generate Compose code from Figma designs.
 
 Go directly from Figma design screens:
 
-![Figma design screen](/media/mvp_demo.PNG)
+![Figma design screen](/media/mvp_demo.png)
 
 To Jetpack Compose Android files:
 
 Log In Page
-![Jetpack Compose screen](/media/log_in_page.PNG)
+![Jetpack Compose screen](/media/log_in_page.png)
 
 List Page
-![Jetpack Compose screen](/media/list_page.PNG)
+![Jetpack Compose screen](/media/list_page.png)
 
 Settings Page
-![Jetpack Compose screen](/media/settings_page.PNG)
+![Jetpack Compose screen](/media/settings_page.png)
 
 Supports dynamic component nesting and other plugins and wrappings with minimal native Figma project tags:
 
